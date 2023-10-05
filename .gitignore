@@ -1,10 +1,35 @@
-# files
-.vscode
-.env
-.env.local
-package-lock.json
-yarn.lock
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
 
-# folders
-build
-node_modules
+# production
+/builds
+/build
+/dist
+
+# misc
+.DS_Store
+.env.development
+.env.production
+
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# editors
+/.vscode
+.idea/
+*/.idea/
+.docker
+
+
+# yarn
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
