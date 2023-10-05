@@ -5,6 +5,7 @@
     "outDir": "build",
     "rootDir": "src",
     "strict": true,
+
     "moduleResolution": "Node",
     "allowSyntheticDefaultImports": true,
 
@@ -12,6 +13,7 @@
     "emitDecoratorMetadata": true,
 
     "skipLibCheck": true,
+    "strictPropertyInitialization": false,
     "forceConsistentCasingInFileNames": true
   },
   "exclude": ["build", "node_modules"]
