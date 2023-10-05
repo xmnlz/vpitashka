@@ -1,22 +1,28 @@
 {
   "name": "vpitashka",
-  "version": "1.0.0",
   "private": true,
+  "version": "1.0.0",
   "license": "MIT",
   "type": "module",
   "main": "build/main.js",
   "scripts": {
     "build": "tsc",
-    "build:changelog": "npx @discordx/changelog --src src",
-    "dev": "ts-node-esm src/main.ts",
-    "start": "node build/main.js",
-    "watch": "nodemon --exec ts-node-esm src/main.ts"
+    "start:dev": "tsc && NODE_ENV=development node build/main.js",
+    "start:prod": "tsc && NODE_ENV=production node build/main.js"
   },
   "dependencies": {
     "@discordx/importer": "^1.2.3",
     "@discordx/pagination": "^3.4.1",
     "discord.js": "^14.13.0",
-    "discordx": "^11.7.6"
+    "discordx": "^11.7.6",
+    "dotenv": "^16.3.1",
+    "pg": "^8.11.3",
+    "reflect-metadata": "^0.1.13",
+    "tslog": "^4.9.2",
+    "tsyringe": "^4.8.0",
+    "typeorm": "^0.3.17",
+    "typeorm-naming-strategies": "^4.1.0",
+    "typeorm-transactional": "^0.4.1"
   },
   "devDependencies": {
     "@types/node": "^20.5.9",
