@@ -6,16 +6,18 @@
   "type": "module",
   "main": "build/main.js",
   "scripts": {
-    "build": "tsc",
+    "lint": "tsc --noEmit",
     "start:dev": "tsc && NODE_ENV=development node build/main.js",
     "start:prod": "tsc && NODE_ENV=production node build/main.js"
   },
   "dependencies": {
     "@discordx/importer": "^1.2.3",
     "@discordx/pagination": "^3.4.1",
+    "@types/node-schedule": "^2.1.1",
     "discord.js": "^14.13.0",
     "discordx": "^11.7.6",
     "dotenv": "^16.3.1",
+    "node-schedule": "^2.1.1",
     "pg": "^8.11.3",
     "reflect-metadata": "^0.1.13",
     "tslog": "^4.9.2",
