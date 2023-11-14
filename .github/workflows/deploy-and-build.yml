@@ -40,4 +40,4 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             cd home/xmnlz/vpitashka/
-            docker compose --env-file .env.production up --build vpitashka -d
+            docker compose --env-file .env.production up -d --no-deps --build vpitashka
