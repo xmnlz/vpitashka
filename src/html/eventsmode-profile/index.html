@@ -1,0 +1,463 @@
+<html lang='en'>
+<head>
+    <meta charset="UTF-8">
+  	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&display=swap" />
+    <title>Eventsmode Profile</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        :root {
+            --first-color: #FFFFFF;
+            --seconds-color: #B0BCFF;
+            --third-color: #545979;
+            --four-color: #B0BCFF;
+            --progress-color: #262732;
+            --progress-fill-color: linear-gradient(270deg, #B0BCFF 0.04%, rgba(142, 160, 255, 0.34) 75.5%);
+        }
+
+        body {
+            background-repeat: no-repeat;
+            font-family: 'Montserrat', sans-serif;
+            max-width: 100%;
+            min-width: 1420px;
+            min-height: 785px;
+        }
+
+        .container {
+            width: 1420px;
+            height: 785px;
+        }
+
+        .user-main {
+            width: 490px;
+            height: 785px;
+            position: absolute;
+        }
+
+        .user-profile {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            top: 150px;
+        }
+
+        .user-avatar {
+            display: flex;
+            width: 225px;
+            height: 225px;
+            margin: 10px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        img.avatar {
+            width: 190px;
+            height: 190px;
+            border-radius: 100%;
+        }
+
+        .user-nickname {
+            display: flex;
+            width: 350px;
+            height: 45px;
+            margin: 10px;
+            text-align: center;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-stats {
+            display: flex;
+            position: absolute;
+            justify-content: center;
+            gap: 30px;
+            top: 657px;
+            left: 90px;
+        }
+
+        .user-heart, .user-top {
+            display: flex;
+            width: 140px;
+            border-radius: 30px;
+            align-items: center;
+            justify-content: space-around;
+        }
+
+
+        .main-stats {
+            display: flex;
+            width: 930px;
+            height: 555px;
+            position: relative;
+            top: 50px;
+            left: 410px;
+            align-items: center;
+            justify-content: center;
+            column-gap: 60px;
+            margin-left: 18px;
+        }
+
+        .main-text {
+            display: grid;
+            grid-template-columns: 30px 240px 200px;
+            justify-items: center;
+            align-content: center;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .main-information {
+            display: grid;
+            width: 500px;
+            height: 350px;
+            justify-items: end;
+            align-items: center;
+            justify-content: end;
+        }
+
+        .main-header {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            top: 125px;
+        }
+
+        .additional-information {
+            display: flex;
+            width: 245px;
+            height: 270px;
+            align-items: center;
+            flex-direction: column;
+            justify-content: space-evenly;
+        }
+
+        .long-event, .favourite-event{
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+
+        .favourite-event-main, .long-event-main {
+            color: var(--seconds-color);
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .favourite-event-description, .long-event-description {
+            color: var(--first-color);
+            font-size: 22px;
+            font-weight: 500;
+        }
+
+        .custom-progress {
+            display: flex;
+            position: relative;
+            width: 700px;
+            height: 25px;
+            border-radius: 30px;
+            background: #262732;
+            overflow: hidden;
+        }
+
+        .custom-progress progress {
+            width: 100%;
+            height: 100%;
+            border-color: var(--progress-fill-color);
+            border-radius: 30px;
+        }
+
+        .custom-progress progress::-webkit-progress-value {
+            background: var(--progress-fill-color)
+        }
+
+        .custom-progress progress::-webkit-progress-bar {
+            background: var(--progress-color);
+        }
+
+        .progress-event {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            left: 510px;
+            top: 5px;
+        }
+
+        .progress-information {
+            display: flex;
+            gap: 10px
+        }
+
+        b.nickname {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--first-color);
+        }
+
+        b.stuff-role {
+            border-radius: 30px;
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--first-color);
+        }
+
+        b.stats, b.description {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--seconds-color);
+        }
+
+        b.main {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--first-color);
+        }
+
+        b.header {
+            color: var(--third-color);
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        b.progress-main {
+            line-height: 2.5;
+            letter-spacing: 0.5rem;
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--four-color);
+        }
+
+        b.progress-description {
+            line-height: 2.5;
+            letter-spacing: 0.5rem;
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--third-color);
+        }
+
+        .user-status {
+            display: flex;
+            width: 350px;
+            height: 30px;
+            text-align: center;
+            align-items: center;
+            justify-content: center;
+        }
+
+        b.status {
+            font-size: 16px;
+            color: var(--four-color);
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="user-main">
+            <div class="user-profile">
+                <div class="user-avatar">
+                    <img src="{{user.avatar}}" class="avatar" alt="avatar">
+                </div>
+                <div class="user-nickname">
+                    <b class="nickname">{{user.nickname}}</b>
+                </div>
+                <div class="user-status">
+                    <b class="status">Administrator</b>
+                </div>
+            </div>
+            <div class="user-stats">
+                <div class="user-heart">
+                    <div data-icon="heart" class='icon' >
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <g clip-path="url(#clip0_210_36)">
+                                <g filter="url(#filter0_d_210_36)">
+                                    <path d="M16.5 3C19.538 3 22 5.5 22 9C22 16 14.5 20 12 21.5C9.5 20 2 16 2 9C2 5.5 4.5 3 7.5 3C9.36 3 11 4 12 5C13 4 14.64 3 16.5 3Z" fill="#B3BFFF"/>
+                                </g>
+                            </g>
+                            <defs>
+                                <filter id="filter0_d_210_36" x="-2" y="-1" width="28" height="26.5" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                                    <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                                    <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                                    <feOffset/>
+                                    <feGaussianBlur stdDeviation="2"/>
+                                    <feComposite in2="hardAlpha" operator="out"/>
+                                    <feColorMatrix type="matrix" values="0 0 0 0 0.192157 0 0 0 0 0.192157 0 0 0 0 0.223529 0 0 0 1 0"/>
+                                    <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_210_36"/>
+                                    <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_210_36" result="shape"/>
+                                </filter>
+                                <clipPath id="clip0_210_36">
+                                    <rect width="24" height="24" fill="white"/>
+                                </clipPath>
+                            </defs>
+                        </svg>
+                    </div>
+                    <b class="stats">{{stats.hearts}}</b>
+                </div>
+                <div class="user-top">
+                    <div data-icon="top" class='icon' >
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <g clip-path="url(#clip0_210_43)">
+                                <g filter="url(#filter0_d_210_43)">
+                                    <path d="M12 7.00002C14.1217 7.00002 16.1566 7.84288 17.6569 9.34317C19.1571 10.8435 20 12.8783 20 15C20 17.1218 19.1571 19.1566 17.6569 20.6569C16.1566 22.1572 14.1217 23 12 23C9.87827 23 7.84344 22.1572 6.34315 20.6569C4.84285 19.1566 4 17.1218 4 15C4 12.8783 4.84285 10.8435 6.34315 9.34317C7.84344 7.84288 9.87827 7.00002 12 7.00002ZM12 10.5L10.678 13.18L7.72 13.61L9.86 15.695L9.355 18.641L12 17.25L14.645 18.64L14.14 15.695L16.28 13.609L13.322 13.179L12 10.5ZM13 1.99902L18 2.00002V5.00002L16.637 6.13802C15.5059 5.54495 14.271 5.17554 13 5.05002V1.99902ZM11 1.99902V5.04902C9.72935 5.17467 8.49482 5.54408 7.364 6.13702L6 5.00002V2.00002L11 1.99902Z" fill="#B3BFFF"/>
+                                </g>
+                            </g>
+                            <defs>
+                                <filter id="filter0_d_210_43" x="0" y="-2.00098" width="24" height="29.001" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                                    <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                                    <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                                    <feOffset/>
+                                    <feGaussianBlur stdDeviation="2"/>
+                                    <feComposite in2="hardAlpha" operator="out"/>
+                                    <feColorMatrix type="matrix" values="0 0 0 0 0.192157 0 0 0 0 0.192157 0 0 0 0 0.223529 0 0 0 1 0"/>
+                                    <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_210_43"/>
+                                    <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_210_43" result="shape"/>
+                                </filter>
+                                <clipPath id="clip0_210_43">
+                                    <rect width="24" height="24" fill="white"/>
+                                </clipPath>
+                            </defs>
+                        </svg>
+                    </div>
+                    <b class="stats">{{stats.top}}</b>
+                </div>
+            </div>
+        </div>
+        <div class="main-header">
+            <b class="main">General Statistics</b>
+        </div>
+        <div class="main-stats">
+            
+            <div class="main-information">
+                <div class="main-block">
+                    <div class="main-text">
+                        <div data-icon="time" class='icon' >
+                            <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M9.04117 8.45475C11.299 6.64576 14.1069 5.66214 17 5.66675C20.0104 5.66675 22.7772 6.70941 24.9588 8.45475L27.0172 6.39633L29.0204 8.3995L26.962 10.4579C28.2331 12.0492 29.1045 13.9218 29.5032 15.9191C29.902 17.9163 29.8165 19.98 29.2539 21.9374C28.6913 23.8947 27.668 25.6889 26.2696 27.1696C24.8713 28.6503 23.1386 29.7744 21.2165 30.448C19.2945 31.1215 17.239 31.3248 15.2223 31.0408C13.2056 30.7569 11.2862 29.9939 9.62486 28.8158C7.96353 27.6378 6.60859 26.0788 5.67346 24.2696C4.73833 22.4603 4.25022 20.4534 4.25 18.4167C4.25 15.4063 5.29267 12.6396 7.038 10.4579L4.97958 8.40091L6.98275 6.39775L9.04117 8.45475ZM18.4167 17.0001V10.618L11.3333 19.8334H15.5833V26.2084L22.6667 17.0001H18.4167ZM11.3333 1.41675H22.6667V4.25008H11.3333V1.41675Z" fill="#B3BFFF"/>
+                            </svg>
+                        </div>
+                        <b class="header">Total time:</b>
+                        <b class="description">{{stats.totalTime}}</b>
+                    </div>
+                </div>
+
+                <div class="main-block">
+                    <div class="main-text">
+                        <div data-icon="weekly_time" class='icon' >
+                            <svg width="34" height="35" viewBox="0 0 34 35" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M24.9588 8.70325L27.0172 6.58429L29.0204 8.64638L26.962 10.7653C28.7653 13.0886 29.7487 15.9735 29.7511 18.9473C29.7535 21.9212 28.7748 24.8077 26.9752 27.1341C25.1757 29.4605 22.662 31.0888 19.8459 31.7524C17.0299 32.4159 14.0784 32.0753 11.475 30.7864C8.87153 29.4974 6.77048 27.3366 5.51599 24.6578C4.26149 21.979 3.92792 18.941 4.56992 16.0415C5.21191 13.142 6.79141 10.5529 9.04968 8.69829C11.3079 6.84368 14.1111 5.83351 17 5.83325C20.0104 5.83325 22.7772 6.90659 24.9588 8.70325ZM15.5833 11.6666V20.4166H18.4167V11.6666H15.5833ZM11.3333 1.45825H22.6667V4.37492H11.3333V1.45825Z" fill="#B3BFFF"/>
+                            </svg>
+                        </div>
+                        <b class="header">Weekly time:</b>
+                        <b class="description">{{stats.weeklyTime}}</b>
+                    </div>
+                </div>
+
+                <div class="main-block">
+                    <div class="main-text">
+                        <div data-icon="main_coin" class='icon' >
+                            <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M17.0071 31.171C9.18284 31.171 2.84042 24.8286 2.84042 17.0043C2.84042 9.18006 9.18284 2.83765 17.0071 2.83765C24.8313 2.83765 31.1738 9.18006 31.1738 17.0043C31.1738 24.8286 24.8313 31.171 17.0071 31.171ZM17.0071 10.9934L10.9962 17.0043L17.0071 23.0152L23.0166 17.0043L17.0071 10.9934Z" fill="#B3BFFF"/>
+                            </svg>
+                        </div>
+                        <b class="header">Total salary:</b>
+                        <b class="description">{{stats.totalSalary}}</b>
+                    </div>
+                </div>
+
+                <div class="main-block">
+                    <div class="main-text">
+                        <div data-icon="weekly_coin" class='icon' >
+                            <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M17.0071 31.171C9.18284 31.171 2.84042 24.8286 2.84042 17.0043C2.84042 9.18006 9.18284 2.83765 17.0071 2.83765C24.8313 2.83765 31.1738 9.18006 31.1738 17.0043C31.1738 24.8286 24.8313 31.171 17.0071 31.171ZM15.5904 22.671V25.5043H18.4238V22.671H19.8404C20.4982 22.671 21.1429 22.4878 21.7024 22.142C22.2619 21.7962 22.714 21.3015 23.0082 20.7132C23.3023 20.1249 23.4268 19.4663 23.3678 18.8113C23.3087 18.1562 23.0684 17.5305 22.6738 17.0043C23.0684 16.4781 23.3087 15.8524 23.3678 15.1974C23.4268 14.5423 23.3023 13.8837 23.0082 13.2954C22.714 12.7071 22.2619 12.2124 21.7024 11.8666C21.1429 11.5208 20.4982 11.3376 19.8404 11.3376H18.4238V8.50431H15.5904V11.3376H11.3404V22.671H15.5904ZM14.1738 18.421H19.8404C20.0283 18.421 20.2085 18.4956 20.3413 18.6284C20.4741 18.7613 20.5488 18.9415 20.5488 19.1293C20.5488 19.3172 20.4741 19.4973 20.3413 19.6302C20.2085 19.763 20.0283 19.8376 19.8404 19.8376H14.1738V18.421ZM14.1738 14.171H19.8404C20.0283 14.171 20.2085 14.2456 20.3413 14.3784C20.4741 14.5113 20.5488 14.6915 20.5488 14.8793C20.5488 15.0672 20.4741 15.2473 20.3413 15.3802C20.2085 15.513 20.0283 15.5876 19.8404 15.5876H14.1738V14.171Z" fill="#B3BFFF"/>
+                            </svg>
+                        </div>
+                        <b class="header">Weekly salary:</b>
+                        <b class="description">{{stats.weeklySalary}}</b>
+                    </div>
+                </div>
+
+                <div class="main-block">
+                    <div class="main-text">
+                        <div data-icon="warn" class='icon' >
+                            <svg width="34" height="35" viewBox="0 0 34 35" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M19.8404 29.1711V32.0878H2.84042V29.1711H19.8404ZM20.6692 1.00488L31.688 12.3478L29.6848 14.4099L28.1818 13.8951L24.6755 17.5045L32.6896 25.7543L30.6864 27.8163L22.6723 19.5665L19.2667 23.0709L19.6676 24.7203L17.663 26.7838L6.64417 15.4395L8.64734 13.3774L10.251 13.7901L19.1661 4.61279L18.666 3.06696L20.6692 1.00488Z" fill="#B3BFFF"/>
+                            </svg>
+                        </div>
+                        <b class="header">Warns</b>
+                        <b class="description">{{stats.warns}}/3</b>
+                    </div>
+                </div>
+
+                <div class="main-block">
+                    <div class="main-text">
+                        <div data-icon="date" class='icon' >
+                            <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M24.0833 4.25008H29.75C30.1257 4.25008 30.4861 4.39934 30.7517 4.66501C31.0174 4.93069 31.1667 5.29102 31.1667 5.66675V28.3334C31.1667 28.7091 31.0174 29.0695 30.7517 29.3351C30.4861 29.6008 30.1257 29.7501 29.75 29.7501H4.24999C3.87427 29.7501 3.51394 29.6008 3.24826 29.3351C2.98258 29.0695 2.83333 28.7091 2.83333 28.3334V5.66675C2.83333 5.29102 2.98258 4.93069 3.24826 4.66501C3.51394 4.39934 3.87427 4.25008 4.24999 4.25008H9.91666V1.41675H12.75V4.25008H21.25V1.41675H24.0833V4.25008ZM5.66666 12.7501V26.9167H28.3333V12.7501H5.66666ZM8.49999 15.5834H11.3333V18.4167H8.49999V15.5834ZM8.49999 21.2501H11.3333V24.0834H8.49999V21.2501ZM14.1667 15.5834H25.5V18.4167H14.1667V15.5834ZM14.1667 21.2501H21.25V24.0834H14.1667V21.2501Z" fill="#B3BFFF"/>
+                            </svg>
+                        </div>
+                        <b class="header">Date</b>
+                        <b class="description">{{stats.date}}</b>
+                    </div>
+                </div>
+            </div>
+
+            <div class="additional-information">
+                <div class="long-event">
+                    <b class="long-event-main">The Longest Event</b>
+                    <b class="long-event-description">{{stats.longestEvent}}</b>
+                </div>
+                <div class="discord">
+                    <div data-icon="discord_icon" class='discord' >
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <g clip-path="url(#clip0_210_103)">
+                                <g filter="url(#filter0_d_210_103)">
+                                    <path d="M25.7373 7.11592C23.8951 6.2703 21.9494 5.67093 19.9507 5.33325C19.696 5.77192 19.4133 6.36659 19.2147 6.83325C17.0891 6.522 14.9296 6.522 12.804 6.83325C12.6053 6.36659 12.3067 5.77192 12.0667 5.33325C10.0661 5.66695 8.1191 6.26647 6.27734 7.11592C2.61468 12.5213 1.62401 17.7999 2.12001 23.0066C4.26615 24.5823 6.66359 25.7833 9.21068 26.5586C9.78288 25.7862 10.2895 24.9674 10.7253 24.1106C9.88934 23.7986 9.09868 23.4173 8.33334 22.9639C8.53201 22.8226 8.72934 22.6666 8.91334 22.5106C13.5267 24.6199 18.5227 24.6199 23.0787 22.5106C23.2773 22.6666 23.4613 22.8226 23.6587 22.9639C22.8947 23.4173 22.1027 23.7986 21.268 24.1106C21.7034 24.9673 22.2096 25.7862 22.7813 26.5586C25.3294 25.7856 27.7272 24.5844 29.872 23.0066C30.4813 16.9799 28.9093 11.7426 25.7387 7.11592H25.7373ZM11.36 19.7946C9.97334 19.7946 8.84134 18.5346 8.84134 16.9933C8.84134 15.4506 9.94534 14.1906 11.3613 14.1906C12.7613 14.1906 13.908 15.4506 13.8787 16.9933C13.8787 18.5346 12.7613 19.7946 11.36 19.7946ZM20.6587 19.7946C19.272 19.7946 18.1387 18.5346 18.1387 16.9933C18.1387 15.4506 19.2427 14.1906 20.6587 14.1906C22.0587 14.1906 23.2053 15.4506 23.1773 16.9933C23.1773 18.5346 22.0733 19.7933 20.6573 19.7933L20.6587 19.7946Z" fill="#B3BFFF"/>
+                                </g>
+                            </g>
+                            <defs>
+                                <filter id="filter0_d_210_103" x="-1.99908" y="1.33325" width="36.0004" height="29.2253" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                                    <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                                    <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                                    <feOffset/>
+                                    <feGaussianBlur stdDeviation="2"/>
+                                    <feComposite in2="hardAlpha" operator="out"/>
+                                    <feColorMatrix type="matrix" values="0 0 0 0 0.192157 0 0 0 0 0.192157 0 0 0 0 0.223529 0 0 0 1 0"/>
+                                    <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_210_103"/>
+                                    <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_210_103" result="shape"/>
+                                </filter>
+                                <clipPath id="clip0_210_103">
+                                    <rect width="32" height="32" fill="white"/>
+                                </clipPath>
+                            </defs>
+                        </svg>
+                    </div>
+                </div>
+                <div class="favourite-event">
+                    <b class="favourite-event-main">Favorite Event</b>
+                    <b class="favourite-event-description">{{stats.favoriteEvent}}</b>
+                </div>
+            </div>
+        </div>
+        <div class="progress-event">
+            <div class="custom-progress">
+                <progress id='p0' value='{{stats.percentage}}' max='100'></progress>
+            </div>
+            <div class="progress-information">
+                <b class="progress-main">{{stats.percentage}}%</b>
+                <b class="progress-description">COMPLETE</b>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    document.body.style.backgroundImage = "url({{backgroundURL}})"
+</script>
+</html>

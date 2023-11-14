@@ -16,7 +16,7 @@
 
     "skipLibCheck": true,
     "strictPropertyInitialization": false,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
   },
   "exclude": ["build", "node_modules"]
 }

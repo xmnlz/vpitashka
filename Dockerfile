@@ -1,36 +1,27 @@
-## build runner
-FROM node:lts-alpine as build-runner
-
-# Set temp directory
-WORKDIR /tmp/app
-
-# Move package.json
-COPY package.json .
-
-# Install dependencies
-RUN npm install
-
-# Move source files
-COPY src ./src
-COPY tsconfig.json   .
-
-# Build project
-RUN npm run build
-
 ## production runner
-FROM node:lts-alpine as prod-runner
+FROM node:20-alpine as prod-runner
 
-# Set work directory
-WORKDIR /app
+ENV CHROME_BIN="/usr/bin/chromium-browser" \
+    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD="true"
 
-# Copy package.json from build-runner
-COPY --from=build-runner /tmp/app/package.json /app/package.json
+RUN npm install -g pnpm
 
-# Install dependencies
-RUN npm install --omit=dev
+RUN set -x \
+    && apk update \
+    && apk upgrade \
+    && apk add --no-cache \
+    udev \
+    ttf-freefont \
+    chromium \
+    && pnpm install puppeteer
 
-# Move build files
-COPY --from=build-runner /tmp/app/build /app/build
 
-# Start bot
-CMD [ "npm", "run", "start" ]
+WORKDIR /bot
+
+COPY package.json ./
+
+RUN pnpm install --production=false
+
+COPY . .
+
+CMD [ "pnpm", "start:prod" ]

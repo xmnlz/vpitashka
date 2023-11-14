@@ -1,0 +1,28 @@
+name: 🐛 Bug Report
+description: Report an issue that should be fixed
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for submitting a bug report.
+        
+        Please try to include as much information as possible.
+  - type: textarea
+    attributes:
+      label: What steps can reproduce the bug?
+      description: Explain the bug and provide a good description how can reproduce it.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: What is the expected behavior?
+      description: If possible, please provide text with a screenshot.
+  - type: textarea
+    attributes:
+      label: What do you see instead?
+      description: If possible, please provide text with a screenshot.
+  - type: textarea
+    attributes:
+      label: Additional information
+      description: Is there anything else you think we should know?

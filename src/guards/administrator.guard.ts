@@ -2,7 +2,7 @@ import { CommandInteraction } from 'discord.js';
 import { GuardFunction } from 'discordx';
 import { env } from 'process';
 import { container } from 'tsyringe';
-import { MoreThanOrEqual } from 'typeorm';
+import { In, MoreThanOrEqual } from 'typeorm';
 import { Database } from '../database/data-source.js';
 import { Eventsmode, StaffRole } from '../feature/eventsmode/eventsmode.entity.js';
 import { BotMessages, Colors } from '../lib/constants.js';
@@ -10,7 +10,7 @@ import { embedResponse } from '../lib/embed-response.js';
 import { CommandError } from '../lib/errors/command.error.js';
 
 const entityManager = container.resolve(Database).em;
-export const EventsmodeGuard: GuardFunction<CommandInteraction<'cached'>> = async (
+export const AdministratorGuard: GuardFunction<CommandInteraction<'cached'>> = async (
   ctx,
   _bot,
   next,
@@ -23,7 +23,7 @@ export const EventsmodeGuard: GuardFunction<CommandInteraction<'cached'>> = asyn
     isHired: true,
     userId: ctx.user.id,
     guild: { id: ctx.guild.id },
-    staffRole: MoreThanOrEqual(StaffRole.Eventsmode),
+    staffRole: MoreThanOrEqual(StaffRole.Admin),
   });
 
   if (eventsmode) return next();

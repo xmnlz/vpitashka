@@ -1,7 +1,30 @@
-version: "3"
+version: '3.9'
+
 services:
-  app:
+  vpitashka:
+    env_file:
+      - .env.production
+    container_name: eventsmode
+    restart: unless-stopped
     build: .
-    command: node build/main.js
-    environment:
-      - BOT_TOKEN=${BOT_TOKEN}
+
+    links:
+      - database
+
+  database:
+    env_file:
+      - .env.production
+    container_name: postgres-database
+    image: postgres:16
+    restart: always
+    ports:
+      - '6543:5432'
+    volumes:
+      - database:/var/lib/postgresql/data
+
+networks:
+  default:
+    name: database
+
+volumes:
+  database: {}

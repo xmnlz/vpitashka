@@ -7,8 +7,11 @@
   "main": "build/main.js",
   "scripts": {
     "lint": "tsc --noEmit",
-    "start:dev": "tsc && NODE_ENV=development node build/main.js",
-    "start:prod": "tsc && NODE_ENV=production node build/main.js"
+    "start:dev": "pnpm build && NODE_ENV=development node build/main.js",
+    "start:prod": "pnpm build && NODE_ENV=production node build/main.js",
+    "copyfiles": "copyfiles -u 1 src/**/*.html src/**/*.png build/",
+    "clean": "rimraf build/",
+    "build": "pnpm clean && tsc && pnpm copyfiles"
   },
   "dependencies": {
     "@discordx/importer": "^1.2.3",
@@ -17,6 +20,9 @@
     "discord.js": "^14.13.0",
     "discordx": "^11.7.6",
     "dotenv": "^16.3.1",
+    "humanize-duration": "^3.30.0",
+    "moment": "^2.29.4",
+    "node-html-to-image": "^4.0.0",
     "node-schedule": "^2.1.1",
     "pg": "^8.11.3",
     "reflect-metadata": "^0.1.13",
@@ -27,9 +33,12 @@
     "typeorm-transactional": "^0.4.1"
   },
   "devDependencies": {
+    "@types/humanize-duration": "^3.27.2",
     "@types/node": "^20.5.9",
+    "copyfiles": "^2.4.1",
     "nodemon": "^3.0.1",
     "prettier": "^3.0.3",
+    "rimraf": "^5.0.5",
     "ts-node": "^10.9.1",
     "typescript": "5.2.2"
   },

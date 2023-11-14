@@ -31,7 +31,7 @@ class Database {
       synchronize: env.DATABASE_SYNCHRONIZE === 'true',
       logging: env.DATABASE_LOGGING === 'true',
       namingStrategy: new SnakeNamingStrategy(),
-      entities: [dirname(import.meta.url) + '/entity/*'],
+      entities: [dirname(import.meta.url) + '/../feature/**/*'],
       migrations: [],
     });
 

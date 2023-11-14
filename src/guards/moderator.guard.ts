@@ -10,7 +10,7 @@ import { embedResponse } from '../lib/embed-response.js';
 import { CommandError } from '../lib/errors/command.error.js';
 
 const entityManager = container.resolve(Database).em;
-export const EventsmodeGuard: GuardFunction<CommandInteraction<'cached'>> = async (
+export const ModeratorGuard: GuardFunction<CommandInteraction<'cached'>> = async (
   ctx,
   _bot,
   next,
@@ -23,7 +23,7 @@ export const EventsmodeGuard: GuardFunction<CommandInteraction<'cached'>> = asyn
     isHired: true,
     userId: ctx.user.id,
     guild: { id: ctx.guild.id },
-    staffRole: MoreThanOrEqual(StaffRole.Eventsmode),
+    staffRole: MoreThanOrEqual(StaffRole.Moderator),
   });
 
   if (eventsmode) return next();
