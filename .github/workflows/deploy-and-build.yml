@@ -24,7 +24,7 @@ jobs:
       - name: Adding Known Hosts
         run: ssh-keyscan -p ${{ secrets.SSH_PORT }} -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
 
-      - name: DEBUG
+      - name: debug
         run: cat src/lib/errors/command.error.ts
 
       - name: Deploy with rsync
