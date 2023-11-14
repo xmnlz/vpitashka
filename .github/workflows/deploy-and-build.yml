@@ -12,6 +12,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - run: git checkout HEAD^
 
       - name: Setup SSH Key
         uses: shimataro/ssh-key-action@v2
