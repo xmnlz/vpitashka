@@ -2,7 +2,6 @@ import { CommandInteraction } from 'discord.js';
 import { GuardFunction } from 'discordx';
 import { env } from 'process';
 import { container } from 'tsyringe';
-import { In, MoreThanOrEqual } from 'typeorm';
 import { Database } from '../database/data-source.js';
 import { Eventsmode, StaffRole } from '../feature/eventsmode/eventsmode.entity.js';
 import { BotMessages, Colors } from '../lib/constants.js';
@@ -23,10 +22,9 @@ export const CuratorGuard: GuardFunction<CommandInteraction<'cached'>> = async (
     isHired: true,
     userId: ctx.user.id,
     guild: { id: ctx.guild.id },
-    staffRole: MoreThanOrEqual(StaffRole.Curator),
   });
 
-  if (eventsmode) return next();
+  if (eventsmode && eventsmode.staffRole >= StaffRole.Curator) return next();
 
   throw new CommandError({
     ctx,
