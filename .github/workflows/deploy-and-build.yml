@@ -24,9 +24,6 @@ jobs:
       - name: Adding Known Hosts
         run: ssh-keyscan -p ${{ secrets.SSH_PORT }} -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
 
-      - name: debug
-        run: cat src/lib/errors/interaction.error.ts
-
       - name: Deploy with rsync
         run: rsync -rvzP --delete -e "ssh -p ${{ secrets.SSH_PORT }}" src ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:home/xmnlz/vpitashka/
 
