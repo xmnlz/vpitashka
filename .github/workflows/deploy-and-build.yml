@@ -34,4 +34,4 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             cd /home/xmnlz/test/
-            dir
+            ls
