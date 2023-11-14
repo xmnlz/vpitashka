@@ -4,7 +4,7 @@ services:
   vpitashka:
     env_file:
       - .env.production
-    container_name: eventsmode
+    container_name: vpitashka
     restart: unless-stopped
     build: .
 
