@@ -83,10 +83,10 @@ export class SettingsManagementService {
   }
 
   @Transactional()
-  async updateMinimumWeeklyQuota(guildId: string, hours: number) {
+  async updateMinimumWeeklyQuota(guildId: string, minutes: number) {
     await this.settingsManagementRepository.update(
       { guild: { id: guildId } },
-      { minimumWeeklyQuota: 60 * hours },
+      { minimumWeeklyQuota: minutes },
     );
   }
 }
