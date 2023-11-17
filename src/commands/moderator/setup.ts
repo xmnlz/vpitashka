@@ -8,7 +8,6 @@ import {
   MessageActionRowComponentBuilder,
   ModalBuilder,
   ModalSubmitInteraction,
-  StringSelectMenuBuilder,
   TextInputBuilder,
   TextInputStyle,
 } from 'discord.js';
@@ -152,12 +151,10 @@ export class Command {
 
     const guild = await Guild.findOneBy({ id: ctx.guild.id });
 
-    const {
-      isStartedEventCategory,
-      eventsmodeCategoryId,
-      startedEventCategoryId,
-      announceEventChannelId,
-    } = guild!.settingsManagement;
+    const idTemplate = '000000000000000000';
+
+    const { eventsmodeCategoryId, startedEventCategoryId, announceEventChannelId } =
+      guild!.settingsManagement;
 
     const baseRows = [
       new ActionRowBuilder<TextInputBuilder>().addComponents(
@@ -165,8 +162,8 @@ export class Command {
           .setCustomId('@modal/field-event-category-id')
           .setLabel('Event Category Id')
           .setStyle(TextInputStyle.Short)
-          .setPlaceholder(eventsmodeCategoryId ? eventsmodeCategoryId : '999999999999999999')
-          .setValue(eventsmodeCategoryId ? eventsmodeCategoryId : '999999999999999999')
+          .setPlaceholder(eventsmodeCategoryId ? eventsmodeCategoryId : idTemplate)
+          .setValue(eventsmodeCategoryId ? eventsmodeCategoryId : idTemplate)
           .setMinLength(18)
           .setMaxLength(20),
       ),
@@ -175,7 +172,7 @@ export class Command {
           .setCustomId('@modal/field-event-started-category-id')
           .setLabel('Event Started Category Id')
           .setStyle(TextInputStyle.Short)
-          .setPlaceholder(startedEventCategoryId || '999999999999999999')
+          .setPlaceholder(startedEventCategoryId || idTemplate)
           .setRequired(false)
           .setMinLength(18)
           .setMaxLength(20),
@@ -185,7 +182,7 @@ export class Command {
           .setCustomId('@modal/field-event-announce-channel-id')
           .setLabel('Event Announce Channel Id')
           .setStyle(TextInputStyle.Short)
-          .setPlaceholder(announceEventChannelId || '999999999999999999')
+          .setPlaceholder(announceEventChannelId || idTemplate)
           .setRequired(false)
           .setMinLength(18)
           .setMaxLength(20),
@@ -206,8 +203,6 @@ export class Command {
 
   @ModalComponent({ id: '@modal/channel-configure' })
   async channelConfigurationModalHandler(ctx: ModalSubmitInteraction<'cached'>) {
-    const guild = await Guild.findOneBy({ id: ctx.guild.id });
-
     let [eventsmodeCategoryId, startedEventCategoryId, announceEventChannelId] = [
       '@modal/field-event-category-id',
       '@modal/field-event-started-category-id',
