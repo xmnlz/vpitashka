@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { dirname, importx } from '@discordx/importer';
-import { IntentsBitField } from 'discord.js';
+import { IntentsBitField, Partials } from 'discord.js';
 import { Client, DIService, tsyringeDependencyRegistryEngine } from 'discordx';
 import { env } from 'process';
 import { container } from 'tsyringe';
@@ -25,6 +25,8 @@ const {
   GuildEmojisAndStickers,
 } = IntentsBitField.Flags;
 
+const { GuildMember, Channel, Message, User } = Partials;
+
 export const bot = new Client({
   // To use only guild command
   // botGuilds: [(client) => client.guilds.cache.map((guild) => guild.id)],
@@ -38,6 +40,8 @@ export const bot = new Client({
     MessageContent,
     GuildEmojisAndStickers,
   ],
+
+  partials: [GuildMember, Channel, Message, User],
 
   // Debug logs are disabled in silent mode
   silent: true,

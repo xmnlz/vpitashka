@@ -7,7 +7,6 @@ import {
   StringSelectMenuInteraction,
   ChannelType,
   OverwriteType,
-  TextChannel,
   ComponentType,
 } from 'discord.js';
 
@@ -34,7 +33,7 @@ export class Button {
 
   @ButtonComponent({ id: '@action/start-event' })
   async startEventAction(ctx: ButtonInteraction<'cached'>) {
-    await ctx.deferUpdate({ fetchReply: true });
+    await ctx.deferReply({ ephemeral: true });
 
     const guild = await Guild.findOne({
       where: { id: ctx.guild.id },
@@ -48,6 +47,7 @@ export class Button {
     });
 
     if (!eventsmode) {
+      await ctx.followUp({});
       throw new CommandError({
         ctx,
         content: embedResponse({
@@ -116,7 +116,7 @@ export class Button {
     categorySelectCollector.once(
       'collect',
       async (categorySelectMenuCtx: StringSelectMenuInteraction<'cached'>) => {
-        await categorySelectMenuCtx.deferUpdate({ fetchReply: true });
+        await categorySelectMenuCtx.deferReply({ ephemeral: true });
 
         const eventCategory = categorySelectMenuCtx.values[0];
 
@@ -146,7 +146,7 @@ export class Button {
         eventSelectCollector.once(
           'collect',
           async (eventSelectMenuCtx: StringSelectMenuInteraction<'cached'>) => {
-            await eventSelectMenuCtx.deferUpdate({ fetchReply: true });
+            await eventSelectMenuCtx.deferReply({ ephemeral: true });
 
             const event = await Event.findOneBy({
               guild: { id: ctx.guild.id },
