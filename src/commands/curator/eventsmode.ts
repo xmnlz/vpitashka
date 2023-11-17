@@ -84,6 +84,8 @@ export class Command {
     member: GuildMember,
     ctx: CommandInteraction<'cached'>,
   ) {
+    await ctx.deferReply({ ephemeral: true });
+
     const guild = await Guild.findOneBy({ id: ctx.guild.id });
 
     const { isRolesConfigured, eventsmodeRoleId } = guild!.settingsManagement;
@@ -115,7 +117,7 @@ export class Command {
       }),
     });
 
-    await ctx.reply(
+    await ctx.editReply(
       embedResponse({
         template: `Пользователь $1 был нанят как ${bold('Eventsmode')}`,
         replaceArgs: [userWithNameAndId(member.user), bold('Eventsmode')],
@@ -136,6 +138,8 @@ export class Command {
     member: GuildMember,
     ctx: CommandInteraction<'cached'>,
   ) {
+    await ctx.deferReply({ ephemeral: true });
+
     const guild = await Guild.findOneBy({ id: ctx.guild.id });
 
     const { isRolesConfigured, eventsmodeRoleId } = guild!.settingsManagement;
@@ -167,7 +171,7 @@ export class Command {
       }),
     });
 
-    await ctx.reply(
+    await ctx.editReply(
       embedResponse({
         template: `$1 был снят с должности $3`,
         replaceArgs: [userWithNameAndId(member.user), bold('Eventsmode')],
@@ -202,6 +206,8 @@ export class Command {
     staffRole: number,
     ctx: CommandInteraction<'cached'>,
   ) {
+    await ctx.deferReply({ ephemeral: true });
+
     const eventsmode = await Eventsmode.findOneBy({
       userId: member.id,
       guild: { id: member.guild.id },
@@ -233,7 +239,7 @@ export class Command {
       }),
     });
 
-    await ctx.reply(
+    await ctx.editReply(
       embedResponse({
         template: `$1 был поставлен на должность $2`,
         replaceArgs: [userWithNameAndId(member.user), bold(getStuffRole(staffRole))],
