@@ -22,6 +22,7 @@ const {
   GuildMessageReactions,
   GuildVoiceStates,
   MessageContent,
+  GuildEmojisAndStickers,
 } = IntentsBitField.Flags;
 
 export const bot = new Client({
@@ -35,6 +36,7 @@ export const bot = new Client({
     GuildMessageReactions,
     GuildVoiceStates,
     MessageContent,
+    GuildEmojisAndStickers,
   ],
 
   // Debug logs are disabled in silent mode
