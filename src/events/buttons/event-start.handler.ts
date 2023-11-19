@@ -47,7 +47,6 @@ export class Button {
     });
 
     if (!eventsmode) {
-      await ctx.followUp({});
       throw new CommandError({
         ctx,
         content: embedResponse({
@@ -218,20 +217,18 @@ export class Button {
             const eventVoiceChannel = await eventVoiceChannelRaw.lockPermissions();
             const eventTextChannel = await eventTextChannelRaw.lockPermissions();
 
-            if (!eventBans.length) {
+            if (eventBans.length) {
               for (const { target } of eventBans) {
-                if (await isGuildMember(ctx.guild, target.userId)) {
-                  await permissionForChannels(
-                    [eventVoiceChannel, eventTextChannel],
-                    target.userId,
-                    {
-                      Speak: false,
-                      Connect: false,
-                      SendMessages: false,
-                    },
-                    { type: OverwriteType.Member },
-                  );
-                }
+                await permissionForChannels(
+                  [eventVoiceChannel, eventTextChannel],
+                  target.userId,
+                  {
+                    Speak: false,
+                    Connect: false,
+                    SendMessages: false,
+                  },
+                  { type: OverwriteType.Member },
+                );
               }
             }
 
@@ -239,18 +236,16 @@ export class Button {
 
             if (globalEventBans.length) {
               for (const { target } of globalEventBans) {
-                if (await isGuildMember(ctx.guild, target.userId)) {
-                  await permissionForChannels(
-                    [eventVoiceChannel, eventTextChannel],
-                    target.userId,
-                    {
-                      Speak: false,
-                      Connect: false,
-                      SendMessages: false,
-                    },
-                    { type: OverwriteType.Member },
-                  );
-                }
+                await permissionForChannels(
+                  [eventVoiceChannel, eventTextChannel],
+                  target.userId,
+                  {
+                    Speak: false,
+                    Connect: false,
+                    SendMessages: false,
+                  },
+                  { type: OverwriteType.Member },
+                );
               }
             }
 
