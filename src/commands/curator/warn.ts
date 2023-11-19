@@ -164,7 +164,7 @@ export class Command {
       }),
     });
 
-    await ctx.followUp(
+    await ctx.editReply(
       embedResponse({
         template: 'Вы успешно удалили варн у $1',
         replaceArgs: [userMention(warn.target.userId)],
