@@ -21,7 +21,6 @@ import { Guild } from '../../feature/guild/guild.entity.js';
 import { BotMessages, Colors } from '../../lib/constants.js';
 import { embedResponse } from '../../lib/embed-response.js';
 import { CommandError } from '../../lib/errors/command.error.js';
-import { isGuildMember } from '../../lib/is-guild-member.js';
 import { logger } from '../../lib/logger.js';
 import { permissionForChannels } from '../../lib/permission-for-channels.js';
 import { safeJsonParse } from '../../lib/safe-json-parse.js';
