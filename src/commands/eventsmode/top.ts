@@ -44,8 +44,14 @@ export class Command {
 
     const salaryOrTimeSum =
       type === TopOptions.TIME
-        ? await Eventsmode.sum('weeklyTime', { guild: { id: ctx.guild.id }, isHired: true })
-        : await Eventsmode.sum('weeklySalary', { guild: { id: ctx.guild.id }, isHired: true });
+        ? await Eventsmode.sum('weekly_time' as 'weeklyTime', {
+            guild: { id: ctx.guild.id },
+            isHired: true,
+          })
+        : await Eventsmode.sum('weekly_salary' as 'weeklySalary', {
+            guild: { id: ctx.guild.id },
+            isHired: true,
+          });
 
     const textChunks = chunks(
       eventsmode.map(({ userId, weeklyTime, weeklySalary }, index) => {
