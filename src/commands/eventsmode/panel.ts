@@ -289,10 +289,10 @@ export class Command {
       .send({
         embeds: [
           new EmbedBuilder({
-            title: `Event ${event.name} was successfully ended!`,
+            title: `Ивет ${event.name} был успешно закончен!`,
             description: codeBlock(
               'ts',
-              `Salary: ${salary}\nTotal Event Time: ${humanizeMinutes(eventTime)}`,
+              `Зарплата: ${salary}\nВсе проведенное время: ${humanizeMinutes(eventTime)}`,
             ),
           }),
         ],

@@ -48,6 +48,8 @@ export class Command {
     reason: string,
     ctx: CommandInteraction<'cached'>,
   ) {
+    await ctx.deferReply({ ephemeral: true });
+
     await this.globalEventBanService.addGlobalBan(member.id, ctx.guild.id, reason);
 
     await this.loggerService.log({
@@ -59,7 +61,7 @@ export class Command {
       }),
     });
 
-    await ctx.reply(
+    await ctx.editReply(
       embedResponse({
         template: `$1 был добавлен в глобальный бан по причинае: $2`,
         replaceArgs: [userWithNameAndId(member.user), reason],
@@ -81,6 +83,8 @@ export class Command {
     member: GuildMember,
     ctx: CommandInteraction<'cached'>,
   ) {
+    await ctx.deferReply({ ephemeral: true });
+
     await this.globalEventBanService.removeGlobalBan(member.id, ctx.guild.id);
 
     await this.loggerService.log({
@@ -92,7 +96,7 @@ export class Command {
       }),
     });
 
-    await ctx.reply(
+    await ctx.editReply(
       embedResponse({
         template: `$1 был убран из глобального бана`,
         replaceArgs: [userWithNameAndId(member.user)],
@@ -105,6 +109,8 @@ export class Command {
   @SlashGroup('gban')
   @Slash({ description: 'Remove user from global ban list' })
   async list(ctx: CommandInteraction<'cached'>) {
+    await ctx.deferReply({ ephemeral: true });
+
     const guild = await Guild.findOne({
       where: { id: ctx.guild.id },
       relations: { globalEventBans: true },
