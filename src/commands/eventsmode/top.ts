@@ -29,6 +29,8 @@ export class Command {
     type: TopOptions.SALARY | TopOptions.TIME,
     ctx: CommandInteraction<'cached'>,
   ) {
+    await ctx.deferReply({ ephemeral: true });
+
     const eventsmode =
       type === TopOptions.TIME
         ? await Eventsmode.find({
