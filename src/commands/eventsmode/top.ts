@@ -4,6 +4,7 @@ import { injectable } from 'tsyringe';
 import { Eventsmode } from '../../feature/eventsmode/eventsmode.entity.js';
 import { EventsmodeGuard } from '../../guards/eventsmode.guard.js';
 import { Colors } from '../../lib/constants.js';
+import { humanizeMinutes } from '../../lib/humanize-duration.js';
 import { chunks, pagination } from '../../lib/pagination.js';
 
 export enum TopOptions {
@@ -57,7 +58,7 @@ export class Command {
 
     const textChunks = chunks(
       eventsmode.map(({ userId, weeklyTime, weeklySalary }, index) => {
-        const weekly = weeklySalary || weeklyTime;
+        const weekly = weeklySalary || humanizeMinutes(weeklyTime);
 
         return `**${index + 1}.** <@${userId}> ${weekly}`;
       }),
