@@ -60,7 +60,7 @@ export class Command {
   }
 
   @SlashGroup('chat')
-  @Slash({ description: 'open chat to everyone' })
+  @Slash({ description: 'close chat to everyone' })
   async close(ctx: CommandInteraction<'cached'>) {
     await ctx.deferReply({ ephemeral: true });
 
