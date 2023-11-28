@@ -36,7 +36,7 @@ export class Button {
 
     const guild = await Guild.findOne({
       where: { id: ctx.guild.id },
-      relations: { globalEventBans: true },
+      relations: { globalEventBans: true, settingsManagement: true },
     });
 
     const eventsmode = await Eventsmode.findOneBy({
