@@ -3,7 +3,6 @@ import {
   CommandInteraction,
   EmbedBuilder,
   GuildMember,
-  userMention,
 } from 'discord.js';
 import { Discord, Guard, Slash, SlashOption } from 'discordx';
 import moment from 'moment/moment.js';
@@ -11,7 +10,6 @@ import { Between } from 'typeorm';
 import { EventHistory } from '../../feature/event/event-history/event-history.entity.js';
 import { Eventsmode } from '../../feature/eventsmode/eventsmode.entity.js';
 import { EventsmodeGuard } from '../../guards/eventsmode.guard.js';
-import { generateEventsmodeProfile } from '../../html/eventsmode-profile/profile.js';
 import { BotMessages, Colors } from '../../lib/constants.js';
 import { embedResponse } from '../../lib/embed-response.js';
 import { CommandError } from '../../lib/errors/command.error.js';
@@ -40,6 +38,8 @@ export class Command {
     weekly: boolean,
     ctx: CommandInteraction<'cached'>,
   ) {
+    await ctx.deferReply({ ephemeral: true });
+
     const author = member || ctx.member;
 
     const eventsmode = await Eventsmode.findOneBy({
