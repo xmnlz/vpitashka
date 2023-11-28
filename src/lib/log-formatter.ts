@@ -1,7 +1,11 @@
-import { inlineCode, User } from 'discord.js';
+import { inlineCode, Snowflake, User, userMention } from 'discord.js';
 
 export const userWithNameAndId = (user: User) => {
   return inlineCode(`${user.username} (${user.id})`);
+};
+
+export const userWithMentionAndId = (userId: Snowflake) => {
+  return userMention(userId) + inlineCode(`(${userId})`);
 };
 
 export const interpolate = (string: string, params: string[]) => {

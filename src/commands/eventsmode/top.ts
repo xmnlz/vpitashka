@@ -1,81 +1,70 @@
-import { ApplicationCommandOptionType, CommandInteraction, EmbedBuilder } from 'discord.js';
-import { Discord, Guard, SlashGroup, Slash, SlashOption, SlashChoice } from 'discordx';
-import { injectable } from 'tsyringe';
-import { Eventsmode } from '../../feature/eventsmode/eventsmode.entity.js';
+import { codeBlock, CommandInteraction, EmbedBuilder, inlineCode, Snowflake } from 'discord.js';
+import { Discord, Guard, Slash } from 'discordx';
+import moment from 'moment/moment.js';
+import { EventHistory } from '../../feature/event/event-history/event-history.entity.js';
 import { EventsmodeGuard } from '../../guards/eventsmode.guard.js';
 import { Colors } from '../../lib/constants.js';
 import { humanizeMinutes } from '../../lib/humanize-duration.js';
+import { interpolate, userWithMentionAndId } from '../../lib/log-formatter.js';
 import { chunks, pagination } from '../../lib/pagination.js';
 
-export enum TopOptions {
-  TIME = 'time',
-  SALARY = 'salary',
-}
-
 @Discord()
-@injectable()
 @Guard(EventsmodeGuard)
-@SlashGroup({ description: 'view all tops', name: 'top' })
 export class Command {
-  @SlashGroup('top')
-  @Slash({ description: 'top eventsmode by week' })
-  async week(
-    @SlashChoice(TopOptions.SALARY, TopOptions.TIME)
-    @SlashOption({
-      description: 'пользователь',
-      name: 'type',
-      required: true,
-      type: ApplicationCommandOptionType.String,
-    })
-    type: TopOptions.SALARY | TopOptions.TIME,
-    ctx: CommandInteraction<'cached'>,
-  ) {
-    await ctx.deferReply({ ephemeral: true });
+  @Slash({ description: 'Top eventsmode by week' })
+  async top(ctx: CommandInteraction<'cached'>) {
+    await ctx.deferReply();
 
-    const eventsmode =
-      type === TopOptions.TIME
-        ? await Eventsmode.find({
-            where: { guild: { id: ctx.guild.id }, isHired: true },
-            order: { weeklyTime: 'DESC' },
-            select: { userId: true, weeklyTime: true },
-          })
-        : await Eventsmode.find({
-            where: { guild: { id: ctx.guild.id }, isHired: true },
-            order: { weeklySalary: 'DESC' },
-            select: { userId: true, weeklySalary: true },
-          });
+    const eventStatsRaw = await EventHistory.query(
+      `
+          SELECT sum(total_time) as "totalTime", count(*) as "count"
+          FROM public.event_history
+          LEFT JOIN guild ON event_history.guild_id = guild.id
+          WHERE guild_id = $1 AND started_at BETWEEN $2 AND $3`,
+      [ctx.guild.id, moment().startOf('week').toDate(), moment().endOf('week').toDate()],
+    );
 
-    const salaryOrTimeSum =
-      type === TopOptions.TIME
-        ? await Eventsmode.sum('weekly_time' as 'weeklyTime', {
-            guild: { id: ctx.guild.id },
-            isHired: true,
-          })
-        : await Eventsmode.sum('weekly_salary' as 'weeklySalary', {
-            guild: { id: ctx.guild.id },
-            isHired: true,
-          });
+    const eventStats: { totalTime: number; count: number } = eventStatsRaw[0];
+
+    const test: { userId: Snowflake; totalTime: number; eventCount: number }[] =
+      await EventHistory.query(
+        `
+          SELECT eventsmode.user_id as "userId", eventsmode.total_time as "totalTime", count(*) as "eventCount"
+          FROM public.event_history
+          LEFT JOIN guild ON event_history.guild_id = guild.id
+          LEFT JOIN eventsmode ON event_history.eventsmode_id = eventsmode.id
+          GROUP BY eventsmode.user_id, eventsmode.total_time, eventsmode.total_time
+          ORDER BY eventsmode.total_time DESC, COUNT(*) DESC
+          `,
+        [],
+      );
 
     const textChunks = chunks(
-      eventsmode.map(({ userId, weeklyTime, weeklySalary }, index) => {
-        const weekly = weeklySalary || humanizeMinutes(weeklyTime);
-
-        return `**${index + 1}.** <@${userId}> ${weekly}`;
-      }),
+      test.map(({ userId, totalTime, eventCount }, index) =>
+        interpolate(`${index + 1}. $1 - Время: $2, Ивенты: $3`, [
+          userWithMentionAndId(userId),
+          inlineCode(humanizeMinutes(totalTime)),
+          inlineCode(String(eventCount)),
+        ]),
+      ),
       10,
     );
 
-    const status =
-      type === TopOptions.TIME ? `времени | ${salaryOrTimeSum}` : `зарплате | ${salaryOrTimeSum}`;
-
     const embeds = textChunks.map((textArray) => {
       const embed = new EmbedBuilder();
-      embed.setTitle(`Топ ивентеров по ${status}`);
-      embed.setColor(Colors.INVISIBLE);
-      embed.setDescription(textArray.join('\n'));
+      embed.setColor(Colors.INFO);
+      embed.setDescription(
+        codeBlock(
+          'ts',
+          interpolate(`Топ ивентеров за неделю\nОбщее Время: $1\nОбщее Кол-во Ивентов: $2`, [
+            humanizeMinutes(eventStats.totalTime),
+            String(eventStats.count),
+          ]),
+        ) + `\n${textArray.join('\n')}`,
+      );
       return embed;
     });
 
-    return pagination(ctx, embeds);
+    await pagination(ctx, embeds);
   }
 }
