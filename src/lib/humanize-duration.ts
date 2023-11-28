@@ -4,6 +4,7 @@ export const humanizeDuration = pkg.humanizer({
   language: 'shortEn',
   fallbacks: ['shortEn', 'en'],
   round: true,
+  spacer: '',
   languages: {
     shortEn: {
       y: () => 'y',
