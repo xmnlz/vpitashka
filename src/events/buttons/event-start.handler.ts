@@ -252,6 +252,7 @@ export class Button {
               [eventVoiceChannel, eventTextChannel],
               eventSelectMenuCtx.user.id,
               {
+                ManageRoles: true,
                 ManageChannels: true,
                 SendMessages: true,
                 ViewChannel: true,
