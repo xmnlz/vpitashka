@@ -1,3 +1,4 @@
+import { Snowflake } from 'discord.js';
 import { injectable } from 'tsyringe';
 import { Repository } from 'typeorm';
 import { Transactional } from 'typeorm-transactional';
@@ -90,6 +91,28 @@ export class EventsmodeService {
         longestEvent: () => (longestEvent ? `${longestEvent}` : `longest_event`),
         favoriteEvent: () => (favoriteEvent ? favoriteEvent : `favorite_event`),
         hearts: () => (hearts ? `${hearts}` : `hearts`),
+      },
+    );
+  }
+
+  @Transactional()
+  async removeTime(userId: Snowflake, guildId: Snowflake, amount: number) {
+    await this.eventsmodeRepository.update(
+      { userId, guild: { id: guildId } },
+      {
+        weeklyTime: () => `weekly_time - ${amount}`,
+        totalTime: () => `total_time - ${amount}`,
+      },
+    );
+  }
+
+  @Transactional()
+  async addTime(userId: Snowflake, guildId: Snowflake, amount: number) {
+    await this.eventsmodeRepository.update(
+      { userId, guild: { id: guildId } },
+      {
+        weeklyTime: () => `weekly_time + ${amount}`,
+        totalTime: () => `total_time + ${amount}`,
       },
     );
   }
