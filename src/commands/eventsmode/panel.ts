@@ -35,7 +35,7 @@ export class Command {
     private readonly eventActivityService: EventActivityService,
     private readonly eventHistoryService: EventHistoryService,
     private readonly eventsmodeService: EventsmodeService,
-    private readonly LoggerService: LoggerService,
+    private readonly loggerService: LoggerService,
   ) {}
 
   @Slash({ description: 'Managing active events via panel' })
@@ -149,7 +149,7 @@ export class Command {
 
     const members = voiceChannel.members.filter((m) => m.id !== ctx.member.id).map((m) => m);
 
-    await this.LoggerService.log({
+    await this.loggerService.log({
       guildId: ctx.guild.id,
       bot: ctx.client,
       message: embedResponse({
@@ -175,7 +175,7 @@ export class Command {
       executor: { userId: ctx.member.id, guild: { id: ctx.guild.id } },
     });
 
-    const { id, isPaused, isStared } = eventActivity!;
+    const { id, isPaused, isStared, event } = eventActivity!;
 
     await this.eventActivityService.pauseEventActivity(id, isPaused);
 
@@ -201,6 +201,19 @@ export class Command {
     const updatedEmbed = new EmbedBuilder(ctx.message.embeds[0].data).setFields(
       ...ctx.message.embeds[0].fields,
     );
+
+    await this.loggerService.log({
+      guildId: ctx.guild.id,
+      bot: ctx.client,
+      message: embedResponse({
+        template: `$1 $2 ивент $3`,
+        replaceArgs: [
+          userWithNameAndId(ctx.user),
+          !isPaused ? 'снял с паузы' : 'поставил на паузу',
+          event.category + ' | ' + event.name,
+        ],
+      }),
+    });
 
     await ctx.editReply({ embeds: [updatedEmbed] });
   }
@@ -284,6 +297,20 @@ export class Command {
 
     await ctx.guild.channels.delete(voiceChannelId).catch(logger.error);
     await ctx.guild.channels.delete(textChannelId).catch(logger.error);
+
+    await this.loggerService.log({
+      guildId: ctx.guild.id,
+      bot: ctx.client,
+      message: embedResponse({
+        template: `$1 закочил ивент $2 в $3\n$4`,
+        replaceArgs: [
+          userWithNameAndId(ctx.user),
+          event.category + ' | ' + event.name,
+          time(~~(new Date().getTime() / 1000)),
+          codeBlock('ts', `Время Ивентов: ${eventTime}\nЗарплата: ${salary}`),
+        ],
+      }),
+    });
 
     await ctx.member
       .send({
