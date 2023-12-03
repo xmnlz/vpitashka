@@ -1,4 +1,5 @@
 import { inlineCode, Snowflake, User, userMention } from 'discord.js';
+import moment from 'moment';
 
 export const userWithNameAndId = (user: User) => {
   return inlineCode(`${user.username} (${user.id})`);
@@ -10,6 +11,14 @@ export const userWithMentionAndId = (userId: Snowflake) => {
 
 export const interpolate = (string: string, params: string[]) => {
   return string.replace(/\$(\d+)/g, (_, num) => params[num - 1]);
+};
+
+export const specialWeekInterval = () => {
+  const startOfTheWeek = moment().startOf('week');
+  return [
+    moment().startOf('week').toDate(),
+    startOfTheWeek.add(6, 'days').add(19, 'hours').toDate(),
+  ];
 };
 
 export const getStuffRole = (staffRole: number) => {

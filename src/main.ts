@@ -2,6 +2,7 @@ import 'reflect-metadata';
 import { dirname, importx } from '@discordx/importer';
 import { IntentsBitField, Partials } from 'discord.js';
 import { Client, DIService, tsyringeDependencyRegistryEngine } from 'discordx';
+import moment from 'moment-timezone';
 import { env } from 'process';
 import { container } from 'tsyringe';
 import { Database } from './database/data-source.js';
@@ -10,6 +11,14 @@ import { logger } from './lib/logger.js';
 import dotenv from 'dotenv';
 
 import './lib/error-handling.js';
+
+moment.updateLocale('en', {
+  week: {
+    dow: 1,
+  },
+});
+
+moment.tz.setDefault('Europe/Moscow');
 
 DIService.engine = tsyringeDependencyRegistryEngine.setInjector(container);
 
