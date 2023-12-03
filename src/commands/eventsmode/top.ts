@@ -1,11 +1,12 @@
 import { codeBlock, CommandInteraction, EmbedBuilder, inlineCode, Snowflake } from 'discord.js';
 import { Discord, Guard, Slash } from 'discordx';
-import moment from 'moment/moment.js';
+import { Between } from 'typeorm';
 import { EventHistory } from '../../feature/event/event-history/event-history.entity.js';
+import { Eventsmode } from '../../feature/eventsmode/eventsmode.entity.js';
 import { EventsmodeGuard } from '../../guards/eventsmode.guard.js';
 import { Colors } from '../../lib/constants.js';
 import { humanizeMinutes } from '../../lib/humanize-duration.js';
-import { interpolate, userWithMentionAndId } from '../../lib/log-formatter.js';
+import { interpolate, specialWeekInterval, userWithMentionAndId } from '../../lib/log-formatter.js';
 import { chunks, pagination } from '../../lib/pagination.js';
 
 @Discord()
@@ -15,32 +16,40 @@ export class Command {
   async top(ctx: CommandInteraction<'cached'>) {
     await ctx.deferReply();
 
-    const eventStatsRaw = await EventHistory.query(
+    const [startOfTheWeek, endOfTheWeek] = specialWeekInterval();
+
+    const eventCountByWeek = await EventHistory.count({
+      where: { startedAt: Between(startOfTheWeek, endOfTheWeek) },
+    });
+
+    const totalEventTimeByWeekRaw = await Eventsmode.query(
       `
-          SELECT sum(total_time) as "totalTime", count(*) as "count"
-          FROM public.event_history
-          LEFT JOIN guild ON event_history.guild_id = guild.id
-          WHERE guild_id = $1 AND started_at BETWEEN $2 AND $3`,
-      [ctx.guild.id, moment().startOf('week').toDate(), moment().endOf('week').toDate()],
+        SELECT sum(eventsmode.weekly_time) as "totalTime"
+        FROM public.eventsmode
+        LEFT JOIN guild ON eventsmode.guild_id = guild.id
+        WHERE eventsmode.guild_id = $1
+      `,
+      [ctx.guild.id],
     );
 
-    const eventStats: { totalTime: number; count: number } = eventStatsRaw[0];
+    const totalEventTimeByWeek = totalEventTimeByWeekRaw[0].totalTime;
 
-    const test: { userId: Snowflake; totalTime: number; eventCount: number }[] =
+    const eventsmodeStats: { userId: Snowflake; totalTime: number; eventCount: number }[] =
       await EventHistory.query(
         `
-          SELECT eventsmode.user_id as "userId", eventsmode.total_time as "totalTime", count(*) as "eventCount"
+          SELECT eventsmode.user_id as "userId", eventsmode.weekly_time as "totalTime", count(*) as "eventCount"
           FROM public.event_history
           LEFT JOIN guild ON event_history.guild_id = guild.id
           LEFT JOIN eventsmode ON event_history.eventsmode_id = eventsmode.id
-          GROUP BY eventsmode.user_id, eventsmode.total_time, eventsmode.total_time
-          ORDER BY eventsmode.total_time DESC, COUNT(*) DESC
+          WHERE event_history.guild_id = $1 AND started_at BETWEEN $2 AND $3
+          GROUP BY eventsmode.user_id, eventsmode.weekly_time
+          ORDER BY eventsmode.weekly_time DESC, COUNT(*) DESC
           `,
-        [],
+        [ctx.guild.id, startOfTheWeek, endOfTheWeek],
       );
 
     const textChunks = chunks(
-      test.map(({ userId, totalTime, eventCount }, index) =>
+      eventsmodeStats.map(({ userId, totalTime, eventCount }, index) =>
         interpolate(`${index + 1}. $1 - Время: $2, Ивенты: $3`, [
           userWithMentionAndId(userId),
           inlineCode(humanizeMinutes(totalTime)),
@@ -57,8 +66,8 @@ export class Command {
         codeBlock(
           'ts',
           interpolate(`Топ ивентеров за неделю\nОбщее Время: $1\nОбщее Кол-во Ивентов: $2`, [
-            humanizeMinutes(eventStats.totalTime),
-            String(eventStats.count),
+            humanizeMinutes(totalEventTimeByWeek || 0),
+            String(eventCountByWeek),
           ]),
         ) + `\n${textArray.join('\n')}`,
       );

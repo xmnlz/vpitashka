@@ -29,6 +29,9 @@ dependencies:
   moment:
     specifier: ^2.29.4
     version: 2.29.4
+  moment-timezone:
+    specifier: ^0.5.43
+    version: 0.5.43
   node-html-to-image:
     specifier: ^4.0.0
     version: 4.0.0
@@ -1188,6 +1191,12 @@ packages:
     resolution: {integrity: sha512-+hEnITedc8LAtIP9u3HJDFIdcLV2vXP33sqLLIzkv1Db1zO/1OxbvYf0Y1OC/S/Qo5dxHXepofhmxL02PsKe+A==}
     engines: {node: '>=10'}
     hasBin: true
+    dev: false
+
+  /moment-timezone@0.5.43:
+    resolution: {integrity: sha512-72j3aNyuIsDxdF1i7CEgV2FfxM1r6aaqJyLB2vwb33mXYyoyLly+F1zbWqhA3/bVIoJ4szlUoMbUnVdid32NUQ==}
+    dependencies:
+      moment: 2.29.4
     dev: false
 
   /moment@2.29.4:
