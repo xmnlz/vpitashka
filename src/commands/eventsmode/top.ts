@@ -5,6 +5,8 @@ import { EventHistory } from '../../feature/event/event-history/event-history.en
 import { Eventsmode } from '../../feature/eventsmode/eventsmode.entity.js';
 import { EventsmodeGuard } from '../../guards/eventsmode.guard.js';
 import { Colors } from '../../lib/constants.js';
+import { embedResponse } from '../../lib/embed-response.js';
+import { CommandError } from '../../lib/errors/command.error.js';
 import { humanizeMinutes } from '../../lib/humanize-duration.js';
 import { interpolate, specialWeekInterval, userWithMentionAndId } from '../../lib/log-formatter.js';
 import { chunks, pagination } from '../../lib/pagination.js';
@@ -47,6 +49,16 @@ export class Command {
           `,
         [ctx.guild.id, startOfTheWeek, endOfTheWeek],
       );
+
+    if (!eventsmodeStats.length) {
+      throw new CommandError({
+        ctx,
+        content: embedResponse({
+          template: 'Тут пока что пусто.',
+          status: Colors.DANGER,
+        }),
+      });
+    }
 
     const textChunks = chunks(
       eventsmodeStats.map(({ userId, totalTime, eventCount }, index) =>

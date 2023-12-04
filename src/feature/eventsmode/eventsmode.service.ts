@@ -132,11 +132,11 @@ export class EventsmodeService {
             FROM public.event_history
             LEFT JOIN event ON event.id=event_id
             LEFT JOIN eventsmode ON eventsmode.id = eventsmode_id
-            WHERE eventsmode.id = $1
+            WHERE eventsmode.id = $1 AND eventsmode.is_hired = $2
             GROUP BY event.name
             ORDER BY count DESC LIMIT 1) as x
       `,
-        [id],
+        [id, true],
       );
 
       await this.eventsmodeRepository.update(

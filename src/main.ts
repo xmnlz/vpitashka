@@ -14,7 +14,7 @@ import './lib/error-handling.js';
 
 moment.updateLocale('en', {
   week: {
-    dow: 1,
+    dow: 0,
   },
 });
 
