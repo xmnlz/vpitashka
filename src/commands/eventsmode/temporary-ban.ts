@@ -99,7 +99,9 @@ export class Command {
         SendMessages: false,
       });
 
-      await member.voice.disconnect('temporary banned from event');
+      if (member.voice.channel) {
+        await member.voice.disconnect('temporary banned from event');
+      }
     }
 
     await this.loggerService.log({
