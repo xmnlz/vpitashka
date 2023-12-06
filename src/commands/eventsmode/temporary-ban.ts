@@ -5,11 +5,14 @@ import {
   CommandInteraction,
   EmbedBuilder,
   GuildMember,
+  TextChannel,
   time,
   userMention,
+  VoiceChannel,
 } from 'discord.js';
 import { Discord, Guard, Slash, SlashGroup, SlashOption } from 'discordx';
 import { injectable } from 'tsyringe';
+import { EventActivity } from '../../feature/event/event-activity/event-activity.entity.js';
 import { EventBan } from '../../feature/event/event-ban/event-ban.entity.js';
 import { EventBanService } from '../../feature/event/event-ban/event-ban.service.js';
 import { LoggerService } from '../../feature/guild/guild-logger.service.js';
@@ -19,6 +22,7 @@ import { embedResponse } from '../../lib/embed-response.js';
 import { CommandError } from '../../lib/errors/command.error.js';
 import { interpolate, userWithNameAndId } from '../../lib/log-formatter.js';
 import { chunks, pagination } from '../../lib/pagination.js';
+import { permissionForChannels } from '../../lib/permission-for-channels.js';
 
 @Discord()
 @injectable()
@@ -76,6 +80,27 @@ export class Command {
       days: dayCount,
       reason,
     });
+
+    const eventActivity = await EventActivity.findOneBy({
+      executor: { userId: ctx.user.id, guild: { id: ctx.guild.id } },
+    });
+
+    if (eventActivity) {
+      const { textChannelId, voiceChannelId } = eventActivity;
+
+      const textChannel = ctx.guild.channels.cache.get(textChannelId) as TextChannel | undefined;
+      const voiceChannel = ctx.guild.channels.cache.get(voiceChannelId) as VoiceChannel | undefined;
+
+      if (!textChannel || !voiceChannel) return;
+
+      await permissionForChannels([textChannel, voiceChannel], member.id, {
+        Speak: false,
+        Connect: false,
+        SendMessages: false,
+      });
+
+      await member.voice.disconnect('temporary banned from event');
+    }
 
     await this.loggerService.log({
       guildId: ctx.guild.id,
