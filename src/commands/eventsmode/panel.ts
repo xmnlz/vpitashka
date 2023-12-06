@@ -209,7 +209,7 @@ export class Command {
         template: `$1 $2 ивент $3`,
         replaceArgs: [
           userWithNameAndId(ctx.user),
-          !isPaused ? 'снял с паузы' : 'поставил на паузу',
+          !isPaused ? 'поставил на паузу' : 'снял с паузы',
           event.category + ' | ' + event.name,
         ],
       }),
