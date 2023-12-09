@@ -1,5 +1,5 @@
 import { inlineCode, Snowflake, User, userMention } from 'discord.js';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 export const userWithNameAndId = (user: User) => {
   return inlineCode(`${user.username} (${user.id})`);
@@ -14,13 +14,12 @@ export const interpolate = (string: string, params: string[]) => {
 };
 
 export const specialWeekInterval = () => {
-  const now = moment();
-  now.set({ hour: 19, minute: 0, second: 0, millisecond: 0 });
+  const now = moment().tz('Europe/Moscow');
 
-  if (now.hour() < 19) {
-    now.subtract(1, 'week').startOf('week').add(19, 'hours');
-  } else {
-    now.startOf('week').add(19, 'hours');
+  now.set({ year: 2023, month: 11, date: 3, hour: 19, minute: 0, second: 0, millisecond: 0 });
+
+  if (now.day() !== 0) {
+    now.add(1, 'week');
   }
 
   const endOfWeek = now.clone().add(7, 'days');

@@ -12,12 +12,6 @@ import dotenv from 'dotenv';
 
 import './lib/error-handling.js';
 
-moment.updateLocale('en', {
-  week: {
-    dow: 0,
-  },
-});
-
 moment.tz.setDefault('Europe/Moscow');
 
 DIService.engine = tsyringeDependencyRegistryEngine.setInjector(container);
