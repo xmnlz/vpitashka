@@ -1,5 +1,5 @@
 import { injectable } from 'tsyringe';
-import { Repository, SaveOptions } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Transactional } from 'typeorm-transactional';
 import { Database } from '../../database/data-source.js';
 import { Event } from './event.entity.js';
@@ -55,7 +55,7 @@ export class EventService {
   }
 
   @Transactional()
-  async removeEvent(guildId: string, evenName: string) {
-    await Event.delete({ guild: { id: guildId }, name: evenName });
+  async removeEvent(guildId: string, eventName: string, eventCategory: string) {
+    await Event.delete({ guild: { id: guildId }, name: eventName, category: eventCategory });
   }
 }

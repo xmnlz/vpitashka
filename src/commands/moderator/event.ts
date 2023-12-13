@@ -22,7 +22,6 @@ import {
 import { injectable } from 'tsyringe';
 import { EventService } from '../../feature/event/event.service.js';
 import { LoggerService } from '../../feature/guild/guild-logger.service.js';
-import { Guild } from '../../feature/guild/guild.entity.js';
 import { Event } from '../../feature/event/event.entity.js';
 import { ModeratorGuard } from '../../guards/moderator.guard.js';
 import { BotMessages, Colors } from '../../lib/constants.js';
@@ -44,8 +43,6 @@ export class Command {
   @SlashGroup('event')
   @Slash({ description: 'Add new event' })
   async add(ctx: CommandInteraction<'cached'>) {
-    const guild = await Guild.findOneBy({ id: ctx.guild.id });
-
     const modal = new ModalBuilder()
       .setTitle('Create event')
       .setCustomId('@modal/create-event-action');
@@ -271,9 +268,16 @@ export class Command {
       type: ApplicationCommandOptionType.String,
     })
     name: string,
+    @SlashOption({
+      description: 'event category',
+      name: 'category',
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    category: string,
     ctx: CommandInteraction<'cached'>,
   ) {
-    const event = await Event.findOneBy({ name, guild: { id: ctx.guild.id } });
+    const event = await Event.findOneBy({ name, category, guild: { id: ctx.guild.id } });
 
     if (!event) {
       throw new CommandError({
@@ -286,7 +290,7 @@ export class Command {
       });
     }
 
-    await this.eventService.removeEvent(ctx.guild.id, name);
+    await this.eventService.removeEvent(ctx.guild.id, name, category);
     await ctx.reply({ content: 'Event was successfully deleted.', ephemeral: true });
   }
 }
