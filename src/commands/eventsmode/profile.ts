@@ -47,10 +47,11 @@ export class Command {
     const rawUserTop = await Eventsmode.query(
       `
           SELECT top FROM (
-          SELECT user_id, is_hired, RANK() OVER (ORDER BY weekly_time DESC) as top
-          FROM public.eventsmode) AS x
-          WHERE user_id = $1 AND is_hired = TRUE`,
-      [author.id],
+          SELECT user_id, guild_id, is_hired, RANK() OVER (ORDER BY weekly_time DESC) as top
+          FROM public.eventsmode
+          LEFT JOIN guild ON eventsmode.guild_id = guild.id) AS x
+          WHERE user_id = $1 AND is_hired = TRUE AND guild_id = $2`,
+      [author.id, ctx.guild.id],
     );
 
     const { minimumWeeklyQuota } = eventsmode.guild.settingsManagement;
