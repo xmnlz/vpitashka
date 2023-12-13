@@ -11,6 +11,7 @@ import {
   VoiceChannel,
   time,
   bold,
+  TextChannel,
 } from 'discord.js';
 import { ButtonComponent, Discord, Guard, Slash } from 'discordx';
 import { injectable } from 'tsyringe';
@@ -110,11 +111,13 @@ export class Command {
   async eventStart(ctx: ButtonInteraction<'cached'>) {
     await ctx.deferUpdate();
 
-    const eventActivity = await EventActivity.findOneBy({
-      executor: { userId: ctx.member.id, guild: { id: ctx.guild.id } },
+    const eventActivity = await EventActivity.findOne({
+      where: { executor: { userId: ctx.member.id, guild: { id: ctx.guild.id } } },
+      relations: { guild: { settingsManagement: true } },
     });
 
-    const { isStared, id, event, isPaused, eventTime, voiceChannelId } = eventActivity!;
+    const { isStared, id, event, isPaused, eventTime, voiceChannelId, textChannelId, guild } =
+      eventActivity!;
 
     if (isStared) {
       throw new CommandError({
@@ -163,6 +166,18 @@ export class Command {
         ],
       }),
     });
+
+    if (guild.settingsManagement.isStartedEventCategory) {
+      const voiceChannel = ctx.client.channels.cache.get(voiceChannelId) as
+        | VoiceChannel
+        | undefined;
+      const textChannel = ctx.client.channels.cache.get(textChannelId) as TextChannel | undefined;
+
+      if (voiceChannel && textChannel) {
+        await voiceChannel.setParent(guild.settingsManagement.startedEventCategoryId);
+        await textChannel.setParent(guild.settingsManagement.startedEventCategoryId);
+      }
+    }
 
     await ctx.editReply({ embeds: [updatedEmbed] });
   }
