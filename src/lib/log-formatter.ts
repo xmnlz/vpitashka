@@ -19,12 +19,12 @@ export const specialWeekInterval = () => {
   const daysUntilNextSunday = (7 - dayOfWeek) % 7;
 
   const startOfThisWeek = today.clone().subtract(dayOfWeek, 'days').startOf('day').hour(19);
+
   const endOfNextWeek = today
     .clone()
     .add(daysUntilNextSunday + 7, 'days')
     .startOf('day')
     .hour(19);
-
   return [startOfThisWeek.toDate(), endOfNextWeek.toDate()];
 };
 
