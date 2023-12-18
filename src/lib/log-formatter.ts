@@ -16,15 +16,14 @@ export const interpolate = (string: string, params: string[]) => {
 export const specialWeekInterval = () => {
   const today = moment().tz('Europe/Moscow');
   const dayOfWeek = today.day();
-  const daysUntilNextSunday = (7 - dayOfWeek) % 7;
 
-  const startOfThisWeek = today.clone().subtract(dayOfWeek, 'days').startOf('day').hour(19);
-
-  const endOfNextWeek = today
+  const startOfThisWeek = today
     .clone()
-    .add(daysUntilNextSunday + 7, 'days')
-    .startOf('day')
-    .hour(19);
+    .subtract(dayOfWeek - 7, 'days')
+    .startOf('day');
+
+  const endOfNextWeek = startOfThisWeek.clone().add(7, 'days');
+
   return [startOfThisWeek.toDate(), endOfNextWeek.toDate()];
 };
 
