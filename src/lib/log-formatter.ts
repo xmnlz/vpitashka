@@ -14,19 +14,18 @@ export const interpolate = (string: string, params: string[]) => {
 };
 
 export const specialWeekInterval = () => {
-  const now = moment().tz('Europe/Moscow');
+  const today = moment().tz('Europe/Moscow');
+  const dayOfWeek = today.day();
+  const daysUntilNextSunday = (7 - dayOfWeek) % 7;
 
-  now.set({ hour: 19, minute: 0, second: 0, millisecond: 0 });
+  const startOfThisWeek = today.clone().subtract(dayOfWeek, 'days').startOf('day').hour(19);
+  const endOfNextWeek = today
+    .clone()
+    .add(daysUntilNextSunday + 7, 'days')
+    .startOf('day')
+    .hour(19);
 
-  if (now.hour() < 19) {
-    now.subtract(1, 'week').startOf('week').add(19, 'hours');
-  } else {
-    now.startOf('week').add(19, 'hours');
-  }
-
-  const endOfWeek = now.clone().add(7, 'days');
-
-  return [now.toDate(), endOfWeek.toDate()];
+  return [startOfThisWeek.toDate(), endOfNextWeek.toDate()];
 };
 
 export const getStuffRole = (staffRole: number) => {
