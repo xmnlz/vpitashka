@@ -5,15 +5,15 @@ import {
   GuildMember,
 } from 'discord.js';
 import { Discord, Guard, Slash, SlashOption } from 'discordx';
-import { Between } from 'typeorm';
-import { EventHistory } from '../../feature/event/event-history/event-history.entity.js';
+import { GlobalEventHistory } from '../../feature/event/global-event-history/global-event-history.entity.js';
+import { WeeklyEventHistory } from '../../feature/event/weekly-event-history/weekly-event-history.entity.js';
 import { Eventsmode } from '../../feature/eventsmode/eventsmode.entity.js';
 import { EventsmodeGuard } from '../../guards/eventsmode.guard.js';
 import { BotMessages, Colors } from '../../lib/constants.js';
 import { embedResponse } from '../../lib/embed-response.js';
 import { CommandError } from '../../lib/errors/command.error.js';
 import { humanizeMinutes } from '../../lib/humanize-duration.js';
-import { interpolate, specialWeekInterval, userWithNameAndId } from '../../lib/log-formatter.js';
+import { interpolate, userWithNameAndId } from '../../lib/log-formatter.js';
 import { chunks, pagination } from '../../lib/pagination.js';
 
 @Discord()
@@ -58,15 +58,12 @@ export class Command {
       });
     }
 
-    const [startOfTheWeek, endOfTheWeek] = specialWeekInterval();
-
     const eventHistory = weekly
-      ? await EventHistory.findBy({
+      ? await WeeklyEventHistory.findBy({
           guild: { id: ctx.guild.id },
           eventsmode: { guild: { id: author.guild.id }, userId: author.id, isHired: true },
-          startedAt: Between(startOfTheWeek, endOfTheWeek),
         })
-      : await EventHistory.findBy({
+      : await GlobalEventHistory.findBy({
           guild: { id: ctx.guild.id },
           eventsmode: { guild: { id: author.guild.id }, userId: author.id, isHired: true },
         });

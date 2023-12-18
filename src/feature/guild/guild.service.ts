@@ -2,12 +2,14 @@ import { injectable } from 'tsyringe';
 import type { Repository } from 'typeorm';
 import { Transactional } from 'typeorm-transactional';
 import { Database } from '../../database/data-source.js';
+import { WeeklyEventHistory } from '../event/weekly-event-history/weekly-event-history.entity.js';
 import { Guild } from './guild.entity.js';
 import { SettingsManagementService } from './settings-management/settings-management.service.js';
 
 @injectable()
 export class GuildService {
   private guildRepository: Repository<Guild>;
+  private weeklyEventHistoryRepository: Repository<WeeklyEventHistory>;
   private roleManagementService: SettingsManagementService;
 
   constructor(
@@ -15,6 +17,7 @@ export class GuildService {
     private readonly roleManagement: SettingsManagementService,
   ) {
     this.guildRepository = database.em.getRepository(Guild);
+    this.weeklyEventHistoryRepository = database.em.getRepository(WeeklyEventHistory);
     this.roleManagementService = roleManagement;
   }
 

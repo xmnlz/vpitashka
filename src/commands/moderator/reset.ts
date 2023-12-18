@@ -1,8 +1,7 @@
 import { codeBlock, CommandInteraction, EmbedBuilder, Snowflake } from 'discord.js';
 import { Discord, Guard, Slash } from 'discordx';
-import moment from 'moment-timezone';
 import { injectable } from 'tsyringe';
-import { EventHistory } from '../../feature/event/event-history/event-history.entity.js';
+import { WeeklyEventHistory } from '../../feature/event/weekly-event-history/weekly-event-history.entity.js';
 import { Eventsmode } from '../../feature/eventsmode/eventsmode.entity.js';
 import { EventsmodeService } from '../../feature/eventsmode/eventsmode.service.js';
 import { LoggerService } from '../../feature/guild/guild-logger.service.js';
@@ -11,12 +10,7 @@ import { Colors } from '../../lib/constants.js';
 import { embedResponse } from '../../lib/embed-response.js';
 import { CommandError } from '../../lib/errors/command.error.js';
 import { humanizeMinutes } from '../../lib/humanize-duration.js';
-import {
-  interpolate,
-  specialWeekInterval,
-  userWithMentionAndId,
-  userWithNameAndId,
-} from '../../lib/log-formatter.js';
+import { interpolate, userWithMentionAndId, userWithNameAndId } from '../../lib/log-formatter.js';
 import { chunks } from '../../lib/pagination.js';
 
 @Discord()
@@ -49,11 +43,7 @@ export class Command {
           LIMIT 1`,
     );
 
-    const [startOfTheWeek, endOfTheWeek] = specialWeekInterval();
-
-    const title = `${moment(startOfTheWeek).format('dddd, MMMM Do, h:mm:ss a')} - ${moment(
-      endOfTheWeek,
-    ).format('dddd, MMMM Do, h:mm:ss a')}`;
+    const title = `Статистика за неделю`;
 
     const topWeekUserId: string = rawTopWeekUser[0].user_id;
 
@@ -62,20 +52,20 @@ export class Command {
       weeklyTime: number;
       weeklySalary: number;
       eventCount: number;
-    }[] = await EventHistory.query(
+    }[] = await WeeklyEventHistory.query(
       `
           SELECT eventsmode.user_id as "userId",
                  eventsmode.weekly_time as "weeklyTime",
                  eventsmode.weekly_salary as "weeklySalary",
                  count(*) as "eventCount"
-          FROM public.event_history
-          LEFT JOIN guild ON event_history.guild_id = guild.id
-          LEFT JOIN eventsmode ON event_history.eventsmode_id = eventsmode.id
-          WHERE event_history.guild_id = $1 AND started_at BETWEEN $2 AND $3
+          FROM public.weekly_event_history
+          LEFT JOIN guild ON weekly_event_history.guild_id = guild.id
+          LEFT JOIN eventsmode ON weekly_event_history.eventsmode_id = eventsmode.id
+          WHERE weekly_event_history.guild_id = $1 
           GROUP BY eventsmode.user_id, eventsmode.weekly_time, eventsmode.weekly_salary
           ORDER BY eventsmode.weekly_time DESC, COUNT(*) DESC
           `,
-      [ctx.guild.id, startOfTheWeek, endOfTheWeek],
+      [ctx.guild.id],
     );
 
     if (!eventsmode.length) {

@@ -3,7 +3,8 @@ import { injectable } from 'tsyringe';
 import { Repository } from 'typeorm';
 import { Transactional } from 'typeorm-transactional';
 import { Database } from '../../database/data-source.js';
-import { EventHistory } from '../event/event-history/event-history.entity.js';
+import { WeeklyEventHistory } from '../event/weekly-event-history/weekly-event-history.entity.js';
+import { Guild } from '../guild/guild.entity.js';
 import { Eventsmode, StaffRole } from './eventsmode.entity.js';
 
 interface EventsmodeStatistics {
@@ -19,11 +20,11 @@ interface EventsmodeStatistics {
 @injectable()
 export class EventsmodeService {
   private eventsmodeRepository: Repository<Eventsmode>;
-  private eventHistoryRepository: Repository<EventHistory>;
+  private readonly weeklyHistoryRepository: Repository<WeeklyEventHistory>;
 
   constructor(private readonly database: Database) {
     this.eventsmodeRepository = database.em.getRepository(Eventsmode);
-    this.eventHistoryRepository = database.em.getRepository(EventHistory);
+    this.weeklyHistoryRepository = database.em.getRepository(WeeklyEventHistory);
   }
 
   @Transactional()
@@ -119,23 +120,34 @@ export class EventsmodeService {
 
   @Transactional()
   async resetWeekly(guildId: string) {
+    const guild = await Guild.findOne({
+      where: { id: guildId },
+      relations: { weeklyEventHistory: true },
+    });
+
+    const { weeklyEventHistory } = guild!;
+
+    if (weeklyEventHistory.length) {
+      await this.weeklyHistoryRepository.remove(weeklyEventHistory);
+    }
+
     const eventsmode = await this.eventsmodeRepository.findBy({
       guild: { id: guildId },
     });
 
     for (const { id } of eventsmode) {
-      const favoriteEvent = await this.eventHistoryRepository.query(
+      const favoriteEvent = await this.weeklyHistoryRepository.query(
         `
             SELECT name FROM (
             SELECT event.name, COUNT(event.name) AS count
-            FROM public.event_history
-            LEFT JOIN event ON event.id=event_id
-            LEFT JOIN eventsmode ON eventsmode.id = eventsmode_id
-            WHERE eventsmode.id = $1 AND eventsmode.is_hired = $2
+            FROM public.weekly_event_history
+            LEFT JOIN event ON event_id = event.id
+            LEFT JOIN eventsmode ON eventsmode_id = eventsmode.id
+            WHERE eventsmode.id = $1 AND eventsmode.is_hired = True
             GROUP BY event.name
             ORDER BY count DESC LIMIT 1) as x
       `,
-        [id, true],
+        [id],
       );
 
       await this.eventsmodeRepository.update(

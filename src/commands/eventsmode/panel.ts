@@ -17,7 +17,8 @@ import { ButtonComponent, Discord, Guard, Slash } from 'discordx';
 import { injectable } from 'tsyringe';
 import { EventActivity } from '../../feature/event/event-activity/event-activity.entity.js';
 import { EventActivityService } from '../../feature/event/event-activity/event-activity.service.js';
-import { EventHistoryService } from '../../feature/event/event-history/event-history.service.js';
+import { GlobalEventHistoryService } from '../../feature/event/global-event-history/global-event-history.service.js';
+import { WeeklyEventHistoryService } from '../../feature/event/weekly-event-history/weekly-event-history.service.js';
 import { EventsmodeService } from '../../feature/eventsmode/eventsmode.service.js';
 import { LoggerService } from '../../feature/guild/guild-logger.service.js';
 import { EventsmodeGuard } from '../../guards/eventsmode.guard.js';
@@ -34,7 +35,8 @@ import { logger } from '../../lib/logger.js';
 export class Command {
   constructor(
     private readonly eventActivityService: EventActivityService,
-    private readonly eventHistoryService: EventHistoryService,
+    private readonly globalEventHistoryService: GlobalEventHistoryService,
+    private readonly weeklyEventHistoryService: WeeklyEventHistoryService,
     private readonly eventsmodeService: EventsmodeService,
     private readonly loggerService: LoggerService,
   ) {}
@@ -290,7 +292,16 @@ export class Command {
       });
     }
 
-    await this.eventHistoryService.addEventHistory({
+    await this.weeklyEventHistoryService.addWeeklyEventHistory({
+      guild: { id: ctx.guild.id },
+      event,
+      eventsmode: executor,
+      startedAt,
+      totalTime: eventTime,
+      totalSalary: salary,
+    });
+
+    await this.globalEventHistoryService.addGlobalEventHistory({
       guild: { id: ctx.guild.id },
       event,
       eventsmode: executor,

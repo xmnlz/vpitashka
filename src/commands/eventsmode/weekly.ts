@@ -1,13 +1,12 @@
 import { CommandInteraction, EmbedBuilder, userMention } from 'discord.js';
 import { Discord, Guard, Slash } from 'discordx';
-import { Between } from 'typeorm';
-import { EventHistory } from '../../feature/event/event-history/event-history.entity.js';
+import { WeeklyEventHistory } from '../../feature/event/weekly-event-history/weekly-event-history.entity.js';
 import { EventsmodeGuard } from '../../guards/eventsmode.guard.js';
 import { Colors } from '../../lib/constants.js';
 import { embedResponse } from '../../lib/embed-response.js';
 import { CommandError } from '../../lib/errors/command.error.js';
 import { humanizeMinutes } from '../../lib/humanize-duration.js';
-import { interpolate, specialWeekInterval } from '../../lib/log-formatter.js';
+import { interpolate } from '../../lib/log-formatter.js';
 import { chunks, pagination } from '../../lib/pagination.js';
 
 @Discord()
@@ -17,13 +16,10 @@ export class Command {
   async weekly(ctx: CommandInteraction<'cached'>) {
     await ctx.deferReply({ ephemeral: true });
 
-    const [startOfTheWeek, endOfTheWeek] = specialWeekInterval();
-
-    const eventHistory = await EventHistory.find({
+    const eventHistory = await WeeklyEventHistory.find({
       order: { totalTime: 'DESC' },
       where: {
         guild: { id: ctx.guild.id },
-        startedAt: Between(startOfTheWeek, endOfTheWeek),
       },
     });
 

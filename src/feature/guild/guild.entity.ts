@@ -2,7 +2,8 @@ import type { Snowflake } from 'discord.js';
 import { BaseEntity, Column, Entity, OneToMany, OneToOne, PrimaryColumn, Relation } from 'typeorm';
 import { EventActivity } from '../event/event-activity/event-activity.entity.js';
 import { EventBan } from '../event/event-ban/event-ban.entity.js';
-import { EventHistory } from '../event/event-history/event-history.entity.js';
+import { GlobalEventHistory } from '../event/global-event-history/global-event-history.entity.js';
+import { WeeklyEventHistory } from '../event/weekly-event-history/weekly-event-history.entity.js';
 import { Eventsmode } from '../eventsmode/eventsmode.entity.js';
 import { GlobalEventBan } from '../event/event-ban/global-event-ban.entity.js';
 import { Warn } from '../warn/warn.entity.js';
@@ -35,8 +36,11 @@ export class Guild extends BaseEntity {
   @OneToMany(() => EventActivity, (eventActivity) => eventActivity.guild)
   eventActivities: Relation<EventActivity[]>;
 
-  @OneToMany(() => EventHistory, (eventHistory) => eventHistory.guild)
-  eventHistory: Relation<EventHistory[]>;
+  @OneToMany(() => GlobalEventHistory, (globalEventHistory) => globalEventHistory.guild)
+  globalEventHistory: Relation<GlobalEventHistory[]>;
+
+  @OneToMany(() => WeeklyEventHistory, (weeklyEventHistory) => weeklyEventHistory.guild)
+  weeklyEventHistory: Relation<WeeklyEventHistory[]>;
 
   @OneToOne(() => SettingsManagement, (settingsManagement) => settingsManagement.guild, {
     eager: true,

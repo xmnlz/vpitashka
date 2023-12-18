@@ -11,7 +11,7 @@ import { Eventsmode } from '../../eventsmode/eventsmode.entity.js';
 import { Event } from '../event.entity.js';
 import { Guild } from '../../guild/guild.entity.js';
 @Entity()
-export class EventHistory extends BaseEntity {
+export class WeeklyEventHistory extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -21,7 +21,7 @@ export class EventHistory extends BaseEntity {
   @ManyToOne(() => Event, { onDelete: 'CASCADE', eager: true })
   event: Relation<Event>;
 
-  @ManyToOne(() => Guild, (guild) => guild.eventHistory, { eager: true })
+  @ManyToOne(() => Guild, (guild) => guild.weeklyEventHistory, { eager: true })
   @JoinColumn()
   guild: Relation<Guild>;
 
