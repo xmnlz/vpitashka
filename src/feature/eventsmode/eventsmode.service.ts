@@ -121,7 +121,6 @@ export class EventsmodeService {
   async resetWeekly(guildId: string) {
     const eventsmode = await this.eventsmodeRepository.findBy({
       guild: { id: guildId },
-      isHired: true,
     });
 
     for (const { id } of eventsmode) {
