@@ -31,8 +31,6 @@ export class Command {
   async reset(ctx: CommandInteraction<'cached'>) {
     await ctx.deferReply();
 
-    await this.eventsmodeService.resetWeekly(ctx.guild.id);
-
     await this.loggerService.log({
       guildId: ctx.guild.id,
       bot: ctx.client,
@@ -121,6 +119,8 @@ export class Command {
       bot: ctx.client,
       message: { embeds },
     });
+
+    await this.eventsmodeService.resetWeekly(ctx.guild.id);
 
     await ctx.editReply({ content: 'Недельная статистика была успешно сброшенна! ' });
   }
