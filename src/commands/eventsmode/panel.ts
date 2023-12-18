@@ -342,7 +342,7 @@ export class Command {
       .send({
         embeds: [
           new EmbedBuilder({
-            title: `Ивет ${event.name} был успешно закончен!`,
+            title: `Ивент ${event.name} был успешно закончен!`,
             description: codeBlock(
               'ts',
               `Зарплата: ${salary}\nВсе проведенное время: ${humanizeMinutes(eventTime)}`,
