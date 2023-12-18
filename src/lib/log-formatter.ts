@@ -16,10 +16,12 @@ export const interpolate = (string: string, params: string[]) => {
 export const specialWeekInterval = () => {
   const now = moment().tz('Europe/Moscow');
 
-  now.set({ year: 2023, month: 11, date: 3, hour: 19, minute: 0, second: 0, millisecond: 0 });
+  now.set({ hour: 19, minute: 0, second: 0, millisecond: 0 });
 
-  if (now.day() !== 0) {
-    now.add(1, 'week');
+  if (now.hour() < 19) {
+    now.subtract(1, 'week').startOf('week').add(19, 'hours');
+  } else {
+    now.startOf('week').add(19, 'hours');
   }
 
   const endOfWeek = now.clone().add(7, 'days');
