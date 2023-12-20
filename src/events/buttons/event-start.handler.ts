@@ -163,12 +163,7 @@ export class Button {
               });
             }
 
-            const {
-              isChannelConfigured,
-              isEventAnnounce,
-              eventsmodeCategoryId,
-              announceEventChannelId,
-            } = guild!.settingsManagement;
+            const { isChannelConfigured, eventsmodeCategoryId } = guild!.settingsManagement;
 
             if (!isChannelConfigured) {
               throw new CommandError({
@@ -259,65 +254,6 @@ export class Button {
               },
               { type: OverwriteType.Member },
             );
-
-            if (isEventAnnounce) {
-              if (!announceEventChannelId.length) {
-                throw new CommandError({
-                  ctx: eventSelectMenuCtx,
-                  content: embedResponse({
-                    template:
-                      'Please contact your moderator/administrator to setup announce channel',
-                    status: Colors.DANGER,
-                    ephemeral: true,
-                  }),
-                });
-              }
-
-              if (!event.announcedEmbed.length) {
-                throw new CommandError({
-                  ctx: eventSelectMenuCtx,
-                  content: embedResponse({
-                    template:
-                      'Please contact your moderator/administrator to setup announce embed to event',
-                    status: Colors.DANGER,
-                    ephemeral: true,
-                  }),
-                });
-              }
-
-              const eventAnnounceChannel =
-                eventSelectMenuCtx.guild.channels.cache.get(announceEventChannelId);
-
-              if (!eventAnnounceChannel) {
-                throw new CommandError({
-                  ctx: eventSelectMenuCtx,
-                  content: embedResponse({
-                    template: 'bot cant fetch channel :((',
-                    status: Colors.DANGER,
-                    ephemeral: true,
-                  }),
-                });
-              }
-
-              if (!eventAnnounceChannel.isTextBased()) {
-                throw new CommandError({
-                  ctx: eventSelectMenuCtx,
-                  content: embedResponse({
-                    template: 'bot cant fetch channel :((',
-                    status: Colors.DANGER,
-                    ephemeral: true,
-                  }),
-                });
-              }
-
-              await eventAnnounceChannel
-                .send(
-                  safeJsonParse(event.announcedEmbed, {
-                    content: BotMessages.SOMETHING_GONE_WRONG,
-                  }),
-                )
-                .catch(logger.error);
-            }
 
             await this.eventActivityService.createEventActivity({
               guildId: eventSelectMenuCtx.guild.id,
