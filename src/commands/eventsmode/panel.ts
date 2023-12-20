@@ -22,12 +22,13 @@ import { WeeklyEventHistoryService } from '../../feature/event/weekly-event-hist
 import { EventsmodeService } from '../../feature/eventsmode/eventsmode.service.js';
 import { LoggerService } from '../../feature/guild/guild-logger.service.js';
 import { EventsmodeGuard } from '../../guards/eventsmode.guard.js';
-import { Colors } from '../../lib/constants.js';
+import { BotMessages, Colors } from '../../lib/constants.js';
 import { embedResponse } from '../../lib/embed-response.js';
 import { CommandError } from '../../lib/errors/command.error.js';
 import { humanizeMinutes } from '../../lib/humanize-duration.js';
 import { userWithNameAndId } from '../../lib/log-formatter.js';
 import { logger } from '../../lib/logger.js';
+import { safeJsonParse } from '../../lib/safe-json-parse.js';
 
 @Discord()
 @injectable()
@@ -53,7 +54,7 @@ export class Command {
       throw new CommandError({
         ctx,
         content: embedResponse({
-          template: `You dont have any active events yet`,
+          template: `У вас нет активного ивента.`,
           status: Colors.DANGER,
           ephemeral: true,
         }),
@@ -82,22 +83,22 @@ export class Command {
       .setColor(Colors.INVISIBLE)
       .setAuthor({ name: 'Event Activity Info', iconURL: ctx.user.displayAvatarURL() })
       .setFields([
-        { name: 'Event Name', value: `${event.name} | ${event.category}`, inline: true },
+        { name: 'Название Ивента', value: `${event.name} | ${event.category}`, inline: true },
         { name: 'Text Channel', value: channelMention(textChannelId), inline: true },
         { name: 'Voice Channel', value: channelMention(voiceChannelId), inline: true },
       ]);
 
     if (isStared) {
       eventPanelStatusEmbed.addFields([
-        { name: 'Event Time', value: humanizeMinutes(eventTime), inline: true },
+        { name: 'Время Ивента', value: humanizeMinutes(eventTime), inline: true },
         {
-          name: 'Event Started At',
+          name: 'Начало Ивента',
           value: time(~~(startedAt.getTime() / 1000)),
           inline: true,
         },
         {
-          name: 'Event Pause',
-          value: `Status: ${isPaused ? 'On Pause' : 'Going on'}`,
+          name: 'Статус Ивента',
+          value: `${isPaused ? 'On Pause' : 'Going on'}`,
           inline: true,
         },
       ]);
@@ -111,7 +112,7 @@ export class Command {
 
   @ButtonComponent({ id: '@button/event-start-action' })
   async eventStart(ctx: ButtonInteraction<'cached'>) {
-    await ctx.deferUpdate();
+    await ctx.deferReply({ ephemeral: true });
 
     const eventActivity = await EventActivity.findOne({
       where: { executor: { userId: ctx.member.id, guild: { id: ctx.guild.id } } },
@@ -137,15 +138,15 @@ export class Command {
     const mess = ctx.message;
 
     const updatedEmbed = new EmbedBuilder(mess.embeds[0].data).addFields([
-      { name: 'Event Time', value: humanizeMinutes(eventTime), inline: true },
+      { name: 'Время Ивента', value: humanizeMinutes(eventTime), inline: true },
       {
-        name: 'Event Started At',
+        name: 'Начало Ивента',
         value: time(~~(new Date().getTime() / 1000)),
         inline: true,
       },
       {
-        name: 'Event Pause',
-        value: `Status: ${isPaused ? 'On Pause' : 'Going on'}`,
+        name: 'Статус Ивента',
+        value: `${isPaused ? 'На паузе' : 'Активен'}`,
         inline: true,
       },
     ]);
@@ -181,12 +182,39 @@ export class Command {
       }
     }
 
+    if (guild.settingsManagement.isEventAnnounce) {
+      if (!guild.settingsManagement.announceEventChannelId) {
+        throw new CommandError({
+          ctx,
+          content: embedResponse({
+            template: 'Please contact your moderator/administrator to setup announce channel',
+            status: Colors.DANGER,
+            ephemeral: true,
+          }),
+        });
+      }
+
+      const eventAnnounceChannel = ctx.guild.channels.cache.get(
+        guild.settingsManagement.announceEventChannelId,
+      );
+
+      if (eventAnnounceChannel && eventAnnounceChannel.isTextBased()) {
+        await eventAnnounceChannel
+          .send(
+            safeJsonParse(event.announcedEmbed, {
+              content: BotMessages.SOMETHING_GONE_WRONG,
+            }),
+          )
+          .catch(logger.error);
+      }
+    }
+
     await ctx.editReply({ embeds: [updatedEmbed] });
   }
 
   @ButtonComponent({ id: '@button/event-pause-action' })
   async eventPause(ctx: ButtonInteraction<'cached'>) {
-    await ctx.deferUpdate();
+    await ctx.deferReply({ ephemeral: true });
 
     const eventActivity = await EventActivity.findOneBy({
       executor: { userId: ctx.member.id, guild: { id: ctx.guild.id } },
@@ -200,7 +228,7 @@ export class Command {
       throw new CommandError({
         ctx,
         content: embedResponse({
-          template: 'You need to start event first, then use pause.',
+          template: 'Вы должны начать ивент, а потом использовать паузу',
           status: Colors.DANGER,
           ephemeral: true,
         }),
@@ -210,8 +238,8 @@ export class Command {
     ctx.message.embeds[0].fields.pop();
 
     ctx.message.embeds[0].fields.push({
-      name: 'Event Pause',
-      value: `Status: ${!isPaused ? 'On Pause' : 'Going on'}`,
+      name: 'Статус ивента',
+      value: `${!isPaused ? 'На паузе' : 'Активен'}`,
       inline: true,
     });
 
@@ -237,7 +265,7 @@ export class Command {
 
   @ButtonComponent({ id: '@button/event-end-action' })
   async eventEnd(ctx: ButtonInteraction<'cached'>) {
-    await ctx.deferUpdate();
+    await ctx.deferReply({ ephemeral: true });
 
     const eventActivity = await EventActivity.findOneBy({
       executor: { userId: ctx.member.id, guild: { id: ctx.guild.id } },
@@ -259,7 +287,7 @@ export class Command {
       throw new CommandError({
         ctx,
         content: embedResponse({
-          template: 'You need to start event first, then use pause.',
+          template: 'Вам нужно сперва начать ивент, чтобы его закончить',
           status: Colors.DANGER,
           ephemeral: true,
         }),
@@ -270,7 +298,7 @@ export class Command {
       throw new CommandError({
         ctx,
         content: embedResponse({
-          template: 'Your event is currently pause, unpause then try to end it.',
+          template: 'Ваш ивент находиться на паузе, Вам нужно убрать паузу чтобы его закончить',
           status: Colors.DANGER,
           ephemeral: true,
         }),
@@ -315,8 +343,8 @@ export class Command {
     mess.embeds[0].fields.splice(mess.embeds[0].fields.length - 3, 3);
 
     const updatedEmbed = new EmbedBuilder(mess.embeds[0].data).addFields([
-      { name: 'Event Time', value: humanizeMinutes(eventTime), inline: true },
-      { name: 'Event Salary', value: salary.toString(), inline: true },
+      { name: 'Время Ивента', value: humanizeMinutes(eventTime), inline: true },
+      { name: 'Запрлата За Ивент', value: salary.toString(), inline: true },
     ]);
 
     await ctx.editReply({ embeds: [updatedEmbed], components: [] });
