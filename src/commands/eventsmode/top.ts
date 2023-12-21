@@ -31,16 +31,20 @@ export class Command {
 
     const totalEventTimeByWeek = totalEventTimeByWeekRaw[0].totalTime;
 
-    const eventsmodeStats: { userId: Snowflake; totalTime: number; eventCount: number }[] =
+    const weeklyEventCount = await WeeklyEventHistory.count({
+      where: { guild: { id: ctx.guild.id } },
+    });
+
+    const eventsmodeStats: { userId: Snowflake; totalTime: number }[] =
       await WeeklyEventHistory.query(
         `
-          SELECT eventsmode.user_id as "userId", eventsmode.weekly_time as "totalTime", count(*) as "eventCount"
+          SELECT eventsmode.user_id as "userId", eventsmode.weekly_time as "totalTime"
           FROM public.weekly_event_history
           LEFT JOIN guild ON weekly_event_history.guild_id = guild.id
           LEFT JOIN eventsmode ON weekly_event_history.eventsmode_id = eventsmode.id
           WHERE weekly_event_history.guild_id = $1
           GROUP BY eventsmode.user_id, eventsmode.weekly_time
-          ORDER BY eventsmode.weekly_time DESC, COUNT(*) DESC
+          ORDER BY eventsmode.weekly_time DESC
           `,
         [ctx.guild.id],
       );
@@ -56,11 +60,11 @@ export class Command {
     }
 
     const textChunks = chunks(
-      eventsmodeStats.map(({ userId, totalTime, eventCount }, index) =>
+      eventsmodeStats.map(({ userId, totalTime }, index) =>
         interpolate(`${index + 1}. $1 - Время: $2, Ивенты: $3`, [
           userWithMentionAndId(userId),
           inlineCode(humanizeMinutes(totalTime)),
-          inlineCode(String(eventCount)),
+          inlineCode(weeklyEventCount.toString()),
         ]),
       ),
       10,
