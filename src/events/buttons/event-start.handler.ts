@@ -201,6 +201,7 @@ export class Button {
               userLimit: 10,
               type: ChannelType.GuildVoice,
               position: 0,
+              topic: `Ивентер: ${ctx.member.displayName || ctx.user.username}`,
             });
 
             const eventTextChannelRaw = await eventCategoryChannel.children.create({
