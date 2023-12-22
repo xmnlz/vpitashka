@@ -264,12 +264,17 @@ export class Button {
             });
 
             await eventSelectMenuCtx.editReply({
-              content: 'Event was successfully created!',
+              content: 'Ивент был успешно создан!',
               components: [],
             });
 
             await eventTextChannel
               .send(safeJsonParse(event.startEmbed, { content: BotMessages.SOMETHING_GONE_WRONG }))
+              .then(async (msg) => await msg.pin())
+              .catch(logger.error);
+
+            await eventTextChannel
+              .send(embedResponse({ template: '$1 запустил ивент $2', replaceArgs: [] }))
               .then(async (msg) => await msg.pin())
               .catch(logger.error);
           },
