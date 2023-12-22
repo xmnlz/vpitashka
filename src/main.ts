@@ -31,9 +31,6 @@ const {
 const { GuildMember, Channel, Message, User } = Partials;
 
 export const bot = new Client({
-  // To use only guild command
-  // botGuilds: [(client) => client.guilds.cache.map((guild) => guild.id)],
-
   intents: [
     Guilds,
     GuildMembers,
@@ -48,8 +45,6 @@ export const bot = new Client({
 
   // Debug logs are disabled in silent mode
   silent: true,
-
-  simpleCommand: { prefix: '!' },
 });
 
 async function bootstrap() {
