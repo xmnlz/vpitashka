@@ -8,6 +8,7 @@ import {
   ChannelType,
   OverwriteType,
   ComponentType,
+  inlineCode,
 } from 'discord.js';
 
 import { ButtonComponent, Discord } from 'discordx';
@@ -21,6 +22,7 @@ import { Guild } from '../../feature/guild/guild.entity.js';
 import { BotMessages, Colors } from '../../lib/constants.js';
 import { embedResponse } from '../../lib/embed-response.js';
 import { CommandError } from '../../lib/errors/command.error.js';
+import { userWithMentionAndId } from '../../lib/log-formatter.js';
 import { logger } from '../../lib/logger.js';
 import { permissionForChannels } from '../../lib/permission-for-channels.js';
 import { safeJsonParse } from '../../lib/safe-json-parse.js';
@@ -269,12 +271,17 @@ export class Button {
             });
 
             await eventTextChannel
-              .send(safeJsonParse(event.startEmbed, { content: BotMessages.SOMETHING_GONE_WRONG }))
+              .send(
+                embedResponse({
+                  template: '$1 запустил ивент $2',
+                  replaceArgs: [userWithMentionAndId(ctx.user.id), inlineCode(event.name)],
+                }),
+              )
               .then(async (msg) => await msg.pin())
               .catch(logger.error);
 
             await eventTextChannel
-              .send(embedResponse({ template: '$1 запустил ивент $2', replaceArgs: [] }))
+              .send(safeJsonParse(event.startEmbed, { content: BotMessages.SOMETHING_GONE_WRONG }))
               .then(async (msg) => await msg.pin())
               .catch(logger.error);
           },
