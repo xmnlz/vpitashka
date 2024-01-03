@@ -4,7 +4,7 @@ import { EventActivity } from '../../feature/event/event-activity/event-activity
 import { EventActivityService } from '../../feature/event/event-activity/event-activity.service.js';
 import { EventsmodeService } from '../../feature/eventsmode/eventsmode.service.js';
 
-export const eventSchedule = schedule.scheduleJob('*/1 * * * *', async () => {
+export const eventSchedule = schedule.scheduleJob('* * * * *', async () => {
   const eventActivityService = container.resolve(EventActivityService);
   const eventsmodeService = container.resolve(EventsmodeService);
 
