@@ -15,13 +15,21 @@ export const chunks = <T>(array: T[], size = 10): T[][] => {
   );
 };
 
-export const pagination = async (ctx: CommandInteraction<'cached'>, embeds: EmbedBuilder[]) => {
+export const pagination = async (
+  ctx: CommandInteraction<'cached'> | ButtonInteraction<'cached'>,
+  embeds: EmbedBuilder[],
+) => {
   if (!embeds.length) throw new Error('Embeds array is empty, pls provide some embeds.');
 
   let currentPage = 0;
   const maxLength = embeds.length;
+  const maxExistingLength = embeds.length - 1;
 
   const buttons = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
+    new ButtonBuilder()
+      .setEmoji('⏪')
+      .setStyle(ButtonStyle.Secondary)
+      .setCustomId('embed-start-button'),
     new ButtonBuilder()
       .setEmoji('⬅')
       .setStyle(ButtonStyle.Secondary)
@@ -30,6 +38,10 @@ export const pagination = async (ctx: CommandInteraction<'cached'>, embeds: Embe
       .setEmoji('➡')
       .setStyle(ButtonStyle.Secondary)
       .setCustomId('embed-forward-button'),
+    new ButtonBuilder()
+      .setEmoji('⏩')
+      .setStyle(ButtonStyle.Secondary)
+      .setCustomId('embed-end-button'),
   );
 
   const message = await ctx.editReply({
@@ -43,12 +55,12 @@ export const pagination = async (ctx: CommandInteraction<'cached'>, embeds: Embe
 
   const collector = message.createMessageComponentCollector({
     componentType: ComponentType.Button,
-    time: 60_000 * 5,
+    time: 60_000 * 7,
   });
 
   collector.on('collect', async (i: ButtonInteraction<'cached'>) => {
     if (i.customId === 'embed-forward-button') {
-      if (currentPage < maxLength) {
+      if (currentPage < maxExistingLength) {
         ++currentPage;
         await i.update({
           embeds: [
@@ -57,6 +69,7 @@ export const pagination = async (ctx: CommandInteraction<'cached'>, embeds: Embe
             }),
           ],
         });
+        return;
       }
     }
 
@@ -70,8 +83,40 @@ export const pagination = async (ctx: CommandInteraction<'cached'>, embeds: Embe
             }),
           ],
         });
+        return;
       }
     }
+
+    if (i.customId === 'embed-start-button') {
+      if (currentPage > 0) {
+        currentPage = 0;
+        await i.update({
+          embeds: [
+            (embeds.at(currentPage) as EmbedBuilder).setFooter({
+              text: `${currentPage + 1}/${maxLength}`,
+            }),
+          ],
+        });
+        return;
+      }
+    }
+
+    if (i.customId === 'embed-end-button') {
+      if (currentPage < maxExistingLength) {
+        currentPage = maxExistingLength;
+
+        await i.update({
+          embeds: [
+            (embeds.at(currentPage) as EmbedBuilder).setFooter({
+              text: `${currentPage + 1}/${maxLength}`,
+            }),
+          ],
+        });
+        return;
+      }
+    }
+
+    await i.update({});
   });
 
   collector.on('end', async () => {
