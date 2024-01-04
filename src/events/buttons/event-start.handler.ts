@@ -257,6 +257,13 @@ export class Button {
               { type: OverwriteType.Member },
             );
 
+            await permissionForChannels(
+              [eventTextChannel],
+              ctx.guild.roles.everyone,
+              { SendMessages: false },
+              { type: OverwriteType.Role },
+            );
+
             await this.eventActivityService.createEventActivity({
               guildId: eventSelectMenuCtx.guild.id,
               event,
