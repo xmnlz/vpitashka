@@ -3,6 +3,7 @@ import { ArgsOf, Discord, On } from 'discordx';
 import { injectable } from 'tsyringe';
 import { EventActivity } from '../../feature/event/event-activity/event-activity.entity.js';
 import { GlobalEventBan } from '../../feature/event/event-ban/global-event-ban.entity.js';
+import { Eventsmode, StaffRole } from '../../feature/eventsmode/eventsmode.entity.js';
 import { Guild } from '../../feature/guild/guild.entity.js';
 
 @Discord()
@@ -57,6 +58,14 @@ export class Event {
   async onVoiceStateUpdateTextPerms([oldState, newState]: ArgsOf<'voiceStateUpdate'>) {
     const member = oldState.member || newState.member;
     if (!member) return;
+
+    const eventsmode = await Eventsmode.findOneBy({
+      userId: member.user.id,
+      guild: { id: member.guild.id },
+      isHired: true,
+    });
+
+    if (eventsmode && eventsmode.staffRole >= StaffRole.Eventsmode) return;
 
     const guild = await Guild.findOneBy({ id: oldState.guild.id, isEnabled: true });
     if (!guild) return;
