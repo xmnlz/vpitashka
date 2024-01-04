@@ -23,5 +23,5 @@ This bot is tailored to facilitate seamless event management and engagement on t
 ```bash
 docker compose --env-file .env.production up --build vpitashka -d
 ```
-
-To avoid confusion with our hosted version of vpitashka, you are not allowed to publicly host another instance of vpitashka under the same name and use the same avatar.
+> [!CAUTION]
+> To avoid confusion with our hosted version of vpitashka, you are not allowed to publicly host another instance of vpitashka under the same name and use the same avatar.
