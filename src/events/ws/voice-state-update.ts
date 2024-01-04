@@ -5,6 +5,7 @@ import { EventActivity } from '../../feature/event/event-activity/event-activity
 import { GlobalEventBan } from '../../feature/event/event-ban/global-event-ban.entity.js';
 import { Eventsmode, StaffRole } from '../../feature/eventsmode/eventsmode.entity.js';
 import { Guild } from '../../feature/guild/guild.entity.js';
+import { permissionForChannels } from '../../lib/permission-for-channels.js';
 
 @Discord()
 @injectable()
@@ -28,7 +29,7 @@ export class Event {
 
     if (!textChannel) return;
 
-    await textChannel.permissionOverwrites.edit(member.id, { SendMessages: permission });
+    await permissionForChannels([textChannel], member.id, { SendMessages: permission });
   }
 
   @On({ event: 'voiceStateUpdate' })
