@@ -108,12 +108,31 @@ export class EventsmodeService {
   }
 
   @Transactional()
+  async removeHeart(userId: Snowflake, guildId: Snowflake, amount: number) {
+    await this.eventsmodeRepository.update(
+      { userId, guild: { id: guildId } },
+      {
+        hearts: () => `hearts - ${amount}`,
+      },
+    );
+  }
+
+  @Transactional()
   async addTime(userId: Snowflake, guildId: Snowflake, amount: number) {
     await this.eventsmodeRepository.update(
       { userId, guild: { id: guildId } },
       {
         weeklyTime: () => `weekly_time + ${amount}`,
         totalTime: () => `total_time + ${amount}`,
+      },
+    );
+  }
+
+  async addHeart(userId: Snowflake, guildId: Snowflake, amount: number) {
+    await this.eventsmodeRepository.update(
+      { userId, guild: { id: guildId } },
+      {
+        hearts: () => `hearts + ${amount}`,
       },
     );
   }
