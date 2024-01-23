@@ -173,7 +173,7 @@ export class Command {
 
     await ctx.editReply(
       embedResponse({
-        template: `$1 был снят с должности $3`,
+        template: `$1 был снят с должности $2`,
         replaceArgs: [userWithNameAndId(member.user), bold('Eventsmode')],
         status: Colors.SUCCESS,
         ephemeral: true,
