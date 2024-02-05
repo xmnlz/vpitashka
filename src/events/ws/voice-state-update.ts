@@ -3,7 +3,7 @@ import { ArgsOf, Discord, On } from 'discordx';
 import { injectable } from 'tsyringe';
 import { EventActivity } from '../../feature/event/event-activity/event-activity.entity.js';
 import { GlobalEventBan } from '../../feature/event/event-ban/global-event-ban.entity.js';
-import { Eventsmode, StaffRole } from '../../feature/eventsmode/eventsmode.entity.js';
+// import { Eventsmode, StaffRole } from '../../feature/eventsmode/eventsmode.entity.js';
 import { Guild } from '../../feature/guild/guild.entity.js';
 import { permissionForChannels } from '../../lib/permission-for-channels.js';
 
@@ -55,31 +55,31 @@ export class Event {
     }
   }
 
-  @On({ event: 'voiceStateUpdate' })
-  async onVoiceStateUpdateTextPerms([oldState, newState]: ArgsOf<'voiceStateUpdate'>) {
-    const member = oldState.member || newState.member;
-    if (!member) return;
-
-    const eventsmode = await Eventsmode.findOneBy({
-      userId: member.user.id,
-      guild: { id: member.guild.id },
-      isHired: true,
-    });
-
-    if (eventsmode && eventsmode.staffRole >= StaffRole.Eventsmode) return;
-
-    const guild = await Guild.findOneBy({ id: oldState.guild.id, isEnabled: true });
-    if (!guild) return;
-
-    const oldChannel = oldState.channel;
-    const newChannel = newState.channel;
-
-    if (newChannel && oldChannel !== newChannel) {
-      await this.toggleChannelPerms(newChannel, member, guild, true);
-    }
-
-    if (oldChannel && oldChannel !== newChannel) {
-      await this.toggleChannelPerms(oldChannel, member, guild, false);
-    }
-  }
+  // @On({ event: 'voiceStateUpdate' })
+  // async onVoiceStateUpdateTextPerms([oldState, newState]: ArgsOf<'voiceStateUpdate'>) {
+  //   const member = oldState.member || newState.member;
+  //   if (!member) return;
+  //
+  //   const eventsmode = await Eventsmode.findOneBy({
+  //     userId: member.user.id,
+  //     guild: { id: member.guild.id },
+  //     isHired: true,
+  //   });
+  //
+  //   if (eventsmode && eventsmode.staffRole >= StaffRole.Eventsmode) return;
+  //
+  //   const guild = await Guild.findOneBy({ id: oldState.guild.id, isEnabled: true });
+  //   if (!guild) return;
+  //
+  //   const oldChannel = oldState.channel;
+  //   const newChannel = newState.channel;
+  //
+  //   if (newChannel && oldChannel !== newChannel) {
+  //     await this.toggleChannelPerms(newChannel, member, guild, true);
+  //   }
+  //
+  //   if (oldChannel && oldChannel !== newChannel) {
+  //     await this.toggleChannelPerms(oldChannel, member, guild, false);
+  //   }
+  // }
 }
