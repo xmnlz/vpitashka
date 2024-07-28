@@ -313,7 +313,7 @@ export class Command {
       description: 'user',
       name: 'user',
       required: true,
-      type: ApplicationCommandOptionType.String,
+      type: ApplicationCommandOptionType.User,
     })
     member: GuildMember,
     ctx: CommandInteraction<'cached'>,
