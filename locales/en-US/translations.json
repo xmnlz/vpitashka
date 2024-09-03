@@ -1,0 +1,47 @@
+{
+  "voice" : {
+    "connect": {
+      "successReply": "{{channel}} channel has been joined",
+      "errorReply": "can't join a channel"
+    }
+  },
+
+  "logger": {
+    "modal": {
+      "title": "Logger configuration modal",
+      "channelFieldDescription": "Channel Id where all the logs will be sent",
+      "guildFieldDescription": "Guild Id where log channel is located"
+    }
+  },
+
+  "settings": {
+    "roles": {
+      "modal": {
+        "title": "Roles settings related configuration modal",
+        "adminRoleFieldDescription": "Admin role id",
+        "moderatorRoleFieldDescription": "Moderator role id",
+        "curatorRoleFiledDescription": "Curator role id",
+        "coachRoleFieldDescription": "Coach role id",
+        "eventsmodeRoleFieldDescription": "Eventsmode role id"
+      }
+    }
+  },
+
+
+  "eventsmode": {
+    "edit": {
+      "buttons": {
+        "save": {
+          "success": "{{author}} successfully applied new changes to user {{target}}",
+          "failed": "Nothing to save, you need to make changes first then apply changes."
+        }
+      }
+    }
+  },
+
+  "units": {
+    "permissionRole": "Position role",
+    "hearts": "Hearts",
+    "weeklyTime": "Weekly time"
+  }
+}

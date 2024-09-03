@@ -1,0 +1,39 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "outDir": "build",
+    "rootDir": "src",
+
+    "strict": true,
+    "pretty": true,
+
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+
+    "skipLibCheck": true,
+    "strictPropertyInitialization": false,
+    "forceConsistentCasingInFileNames": true,
+
+    // TODO: make them true in prod
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noPropertyAccessFromIndexSignature": true,
+
+    "verbatimModuleSyntax": true
+  },
+  "tsc-alias": {
+    "resolveFullPaths": true,
+    "verbose": true,
+    "replacers": {
+      "base-url": {
+        "enabled": false
+      }
+    }
+  },
+  "exclude": ["build", "node_modules", "./drizzle.config.ts"]
+}

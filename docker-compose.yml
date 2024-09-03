@@ -1,0 +1,29 @@
+version: '3.9'
+
+services:
+  vpitashka:
+    env_file:
+      - ../avn-bot/.env.production
+    container_name: vpitashka
+    restart: unless-stopped
+    build: .
+
+    links:
+      - database
+
+  database:
+    env_file:
+      - ../avn-bot/.env.production
+    container_name: postgres-database
+    image: postgres:16
+    restart: always
+    ports:
+      - '6543:5432'
+    volumes:
+      - database:/var/lib/postgresql/data
+networks:
+  default:
+    name: database
+
+volumes:
+  database: {}

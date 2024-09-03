@@ -1,0 +1,19 @@
+{
+  "salutation": "Hallo Welt!",
+  "salutationWithName": "Hallo {{name}}!",
+
+  "voice" : {
+    "connect": {
+      "successReply": "{{channel}} channel has been joined",
+      "errorReply": "can't join a channel"
+    }
+  },
+
+  "logger": {
+    "modal": {
+      "title": "Logger configuration modal",
+      "channelFieldDescription": "Channel Id where all the logs will be sent",
+      "guildFieldDescription": "Guild Id where log channel is located"
+    }
+  }
+}
