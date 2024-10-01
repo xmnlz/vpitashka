@@ -49,4 +49,7 @@ export class EventActivity extends BaseEntity {
 
   @Column('boolean', { default: false })
   isEnded: boolean;
+
+  @Column('text', { nullable: true })
+  announceMessageId: string | null;
 }

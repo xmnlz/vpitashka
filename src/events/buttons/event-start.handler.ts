@@ -231,7 +231,7 @@ export class Button {
               }
             }
 
-            const { globalEventBans, settingsManagement } = guild!;
+            const { globalEventBans } = guild!;
 
             if (globalEventBans.length) {
               for (const { target } of globalEventBans) {
@@ -282,13 +282,13 @@ export class Button {
 
             if (ctx.guild.id === '457902248660434944') {
               const recruitEmbed = new EmbedBuilder()
-              .setTitle(`<a:1905carebearblue:977344103006236792> Открыт набор на Eventsmod`)
-              .setDescription(
-                `<a:assiki2:1155562343841939587> **Ивентерики** - это люди которые проводят ивентики и глобальные мероприятия. У нас ты сможешь играть в свои любимые игры а так же найти друзей. У нас есть печеньки и чай так что тебя не обидем.
+                .setTitle(`<a:1905carebearblue:977344103006236792> Открыт набор на Eventsmod`)
+                .setDescription(
+                  `<a:assiki2:1155562343841939587> **Ивентерики** - это люди которые проводят ивентики и глобальные мероприятия. У нас ты сможешь играть в свои любимые игры а так же найти друзей. У нас есть печеньки и чай так что тебя не обидем.
                 <a:assiki2:1155562343841939587> Если тебя заинтересовало то подавай заявку на кнопочку ниже или же если возникли вопросы то в лс <@684837635751018520>`,
-              )
-              .setImage('https://i.pinimg.com/736x/4f/d3/38/4fd3380d745bb2c08ba76e01be0650ce.jpg')
-              .setColor(14921983);
+                )
+                .setImage('https://i.pinimg.com/736x/4f/d3/38/4fd3380d745bb2c08ba76e01be0650ce.jpg')
+                .setColor(14921983);
 
               const row = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
                 new ButtonBuilder()
@@ -319,40 +319,6 @@ export class Button {
               .send(safeJsonParse(event.startEmbed, { content: BotMessages.SOMETHING_GONE_WRONG }))
               .then(async (msg) => await msg.pin())
               .catch(logger.error);
-
-              if (settingsManagement.isEventAnnounce) {
-                if (!settingsManagement.announceEventChannelId) {
-                  throw new CommandError({
-                    ctx,
-                    content: embedResponse({
-                      template: 'Please contact your moderator/administrator to setup announce channel',
-                      status: Colors.DANGER,
-                      ephemeral: true,
-                    }),
-                  });
-                }
-          
-                const eventAnnounceChannel = ctx.guild.channels.cache.get(
-                  settingsManagement.announceEventChannelId,
-                );
-          
-                if (eventAnnounceChannel && eventAnnounceChannel.isTextBased()) {
-                  const linkButton = new ButtonBuilder()
-                    .setLabel('Присоединиться')
-                    .setStyle(ButtonStyle.Link)
-                    .setURL(`https://discord.com/channels/${ctx.guild.id}/${eventVoiceChannel.id}`);
-                
-                  const row = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(linkButton);
-                  
-                  const embed = safeJsonParse(event.announcedEmbed, {
-                    content: BotMessages.SOMETHING_GONE_WRONG,
-                  });
-            
-                  await eventAnnounceChannel
-                    .send({ ...embed, components: [row] })
-                    .catch(logger.error);
-                }
-              }
           },
         );
       },
