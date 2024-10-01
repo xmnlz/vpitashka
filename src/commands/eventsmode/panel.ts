@@ -12,6 +12,7 @@ import {
   time,
   bold,
   TextChannel,
+  Message,
 } from 'discord.js';
 import { ButtonComponent, Discord, Guard, Slash } from 'discordx';
 import { injectable } from 'tsyringe';
@@ -74,6 +75,14 @@ export class Command {
         .setEmoji('⏺️')
         .setStyle(ButtonStyle.Secondary)
         .setCustomId('@button/event-end-action'),
+      new ButtonBuilder()
+        .setEmoji('🔔')
+        .setStyle(ButtonStyle.Secondary)
+        .setCustomId('@button/event-announce-send'),
+      new ButtonBuilder()
+        .setEmoji('🔕')
+        .setStyle(ButtonStyle.Secondary)
+        .setCustomId('@button/event-announce-delete'),
     );
 
     const { textChannelId, voiceChannelId, eventTime, event, isStared, startedAt, isPaused } =
@@ -195,7 +204,6 @@ export class Command {
       }
     }
 
-  
     await ctx.editReply({ embeds: [updatedEmbed] });
   }
 
@@ -268,6 +276,8 @@ export class Command {
       executor,
       startedAt,
       eventTime,
+      announceMessageId,
+      guild,
     } = eventActivity!;
 
     if (!isStared) {
@@ -290,6 +300,20 @@ export class Command {
           ephemeral: true,
         }),
       });
+    }
+
+    if (announceMessageId) {
+      try {
+        const announceEventChannel = (await ctx.guild.channels.fetch(
+          guild.settingsManagement.announceEventChannelId,
+        )) as TextChannel;
+
+        const announceMessage = (await announceEventChannel.messages.fetch(
+          announceMessageId,
+        )) as Message;
+
+        await announceMessage.delete().catch((error) => console.log(error));
+      } catch (_) {}
     }
 
     await this.eventActivityService.deleteEventActivity(id);
@@ -366,5 +390,97 @@ export class Command {
         ],
       })
       .catch(logger.error);
+  }
+
+  @ButtonComponent({ id: '@button/event-announce-send' })
+  async eventAnnounceSend(ctx: ButtonInteraction<'cached'>) {
+    await ctx.deferReply({ ephemeral: true });
+
+    const eventActivity = await EventActivity.findOneBy({
+      executor: { userId: ctx.member.id, guild: { id: ctx.guild.id } },
+    });
+
+    const { id, event, guild, voiceChannelId, announceMessageId } = eventActivity!;
+
+    if (announceMessageId) {
+      return await ctx.followUp("You've already announced 😎");
+    }
+
+    if (guild.settingsManagement.isEventAnnounce) {
+      if (!guild.settingsManagement.announceEventChannelId) {
+        throw new CommandError({
+          ctx,
+          content: embedResponse({
+            template: 'Please contact your moderator/administrator to setup announce channel',
+            status: Colors.DANGER,
+            ephemeral: true,
+          }),
+        });
+      }
+
+      const eventAnnounceChannel = ctx.guild.channels.cache.get(
+        guild.settingsManagement.announceEventChannelId,
+      );
+
+      const eventVoiceChannel = ctx.guild.channels.cache.get(voiceChannelId) as VoiceChannel;
+
+      if (eventAnnounceChannel && eventAnnounceChannel.isTextBased()) {
+        const linkButton = new ButtonBuilder()
+          .setLabel('Присоединиться')
+          .setStyle(ButtonStyle.Link)
+          .setURL(`https://discord.com/channels/${ctx.guild.id}/${eventVoiceChannel.id}`);
+
+        const row = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
+          linkButton,
+        );
+
+        const embed = safeJsonParse(event.announcedEmbed, {
+          content: BotMessages.SOMETHING_GONE_WRONG,
+        });
+
+        const message = await eventAnnounceChannel
+          .send({ ...embed, components: [row] })
+          .catch(logger.error);
+
+        if (message instanceof Message) {
+          await this.eventActivityService.setAnnounceMessage(id, message.id);
+        }
+      }
+    }
+
+    await ctx.followUp('You successfully announced the event 🤣🤣🤣');
+  }
+
+  @ButtonComponent({ id: '@button/event-announce-delete' })
+  async eventAnnounceDelete(ctx: ButtonInteraction<'cached'>) {
+    await ctx.deferReply({ ephemeral: true });
+
+    const eventActivity = await EventActivity.findOneBy({
+      executor: { userId: ctx.member.id, guild: { id: ctx.guild.id } },
+    });
+
+    const { id, guild, announceMessageId } = eventActivity!;
+
+    if (!announceMessageId) {
+      return await ctx.followUp("You don't have an announcement to delete 😲");
+    }
+
+    const announceEventChannel = ctx.guild.channels.cache.get(
+      guild.settingsManagement.announceEventChannelId,
+    ) as TextChannel;
+
+    await this.eventActivityService.deleteAnnounceMessage(id);
+
+    try {
+      const announceMessage = (await announceEventChannel.messages.fetch(
+        announceMessageId,
+      )) as Message;
+
+      await announceMessage.delete().catch((error) => console.log(error));
+    } catch (error: any) {
+      return await ctx.followUp(error.toString());
+    }
+
+    await ctx.followUp('You have successfully deleted 🥰');
   }
 }

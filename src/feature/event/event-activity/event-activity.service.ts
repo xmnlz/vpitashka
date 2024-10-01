@@ -3,7 +3,6 @@ import { Repository } from 'typeorm';
 import { Transactional } from 'typeorm-transactional';
 import { Database } from '../../../database/data-source.js';
 import { Eventsmode } from '../../eventsmode/eventsmode.entity.js';
-import { Guild } from '../../guild/guild.entity.js';
 import { EventActivity } from './event-activity.entity.js';
 import { Event } from '../event.entity.js';
 
@@ -67,5 +66,21 @@ export class EventActivityService {
   @Transactional()
   async deleteEventActivity(id: string) {
     await this.eventActivityRepository.delete({ id });
+  }
+
+  @Transactional()
+  async setAnnounceMessage(id: string, announceMessageId: string) {
+    await this.eventActivityRepository.update({ id }, { announceMessageId });
+  }
+
+  @Transactional()
+  async deleteAnnounceMessage(id: string) {
+    const eventActivity = await this.eventActivityRepository.findOneBy({ id });
+
+    if (eventActivity) {
+      eventActivity.announceMessageId = null;
+
+      return await this.eventActivityRepository.save(eventActivity);
+    }
   }
 }
