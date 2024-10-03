@@ -67,7 +67,9 @@ export class Command {
     const buffer = await generateCanvasProfile({
       user: {
         nickname: author.user.username,
-        avatar: author.user.avatarURL({ forceStatic: true, size: 2048 }) ?? '',
+        avatar:
+          author.user.avatarURL({ forceStatic: true, size: 2048 }) ??
+          'https://imgur.com/dbTZKs0.png',
         staffRole: getStuffRole(eventsmode.staffRole),
       },
       stats: {
