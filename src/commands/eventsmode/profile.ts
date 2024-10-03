@@ -1,13 +1,18 @@
-import { ApplicationCommandOptionType, CommandInteraction, GuildMember, AttachmentBuilder } from 'discord.js';
+import {
+  ApplicationCommandOptionType,
+  CommandInteraction,
+  GuildMember,
+  AttachmentBuilder,
+} from 'discord.js';
 import { Discord, Guard, Slash, SlashOption } from 'discordx';
 import { Eventsmode } from '../../feature/eventsmode/eventsmode.entity.js';
 import { EventsmodeGuard } from '../../guards/eventsmode.guard.js';
-import { generateEventsmodeProfile } from '../../html/eventsmode-profile/profile.js';
 import { BotMessages, Colors } from '../../lib/constants.js';
 import { embedResponse } from '../../lib/embed-response.js';
 import { CommandError } from '../../lib/errors/command.error.js';
 import { humanizeMinutes } from '../../lib/humanize-duration.js';
 import { getStuffRole } from '../../lib/log-formatter.js';
+import { generateCanvasProfile } from '../../canvas/eventsmode-profile/profile.js';
 
 @Discord()
 @Guard(EventsmodeGuard)
@@ -59,10 +64,10 @@ export class Command {
 
     const percentageBar = ~~((eventsmode.weeklyTime / minimumWeeklyQuota) * 100);
 
-    const buffer = await generateEventsmodeProfile({
+    const buffer = await generateCanvasProfile({
       user: {
         nickname: author.user.username,
-        avatar: author.user.avatarURL({ forceStatic: true }) ?? '',
+        avatar: author.user.avatarURL({ forceStatic: true, size: 2048 }) ?? '',
         staffRole: getStuffRole(eventsmode.staffRole),
       },
       stats: {
