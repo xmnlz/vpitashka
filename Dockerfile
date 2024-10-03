@@ -11,9 +11,9 @@ RUN set -x \
     && apk upgrade \
     && apk add --no-cache \
     udev \
-    ttf-freefont \
-    chromium \
-    ## && pnpm install puppeteer
+#    ttf-freefont \
+#    chromium \
+#    && pnpm install puppeteer
 
 
 WORKDIR /bot
