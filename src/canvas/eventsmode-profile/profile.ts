@@ -113,7 +113,7 @@ async function drawRoundedProgressBar(
   y: number,
   width: number,
   height: number,
-  progress: number, // progress от 0 до 100
+  progress: number, // progress from 0 to 100
   borderRadius: number,
 ) {
   const normalizedProgress = Math.max(0, Math.min(progress, 100)) / 100;
