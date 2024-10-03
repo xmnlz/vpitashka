@@ -1,8 +1,8 @@
 ## production runner
 FROM node:20-alpine as prod-runner
 
-ENV CHROME_BIN="/usr/bin/chromium-browser" \
-    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD="true"
+# ENV CHROME_BIN="/usr/bin/chromium-browser" \
+#    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD="true"
 
 RUN npm install -g pnpm
 
@@ -13,7 +13,7 @@ RUN set -x \
     udev \
     ttf-freefont \
     chromium \
-    && pnpm install puppeteer
+    ## && pnpm install puppeteer
 
 
 WORKDIR /bot
