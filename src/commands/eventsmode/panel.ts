@@ -11,6 +11,7 @@ import {
   VoiceChannel,
   time,
   bold,
+  roleMention,
   TextChannel,
   Message,
 } from 'discord.js';
@@ -434,12 +435,20 @@ export class Command {
           linkButton,
         );
 
-        const embed = safeJsonParse(event.announcedEmbed, {
+        const safeJsonEmbed = safeJsonParse(event.announcedEmbed, {
           content: BotMessages.SOMETHING_GONE_WRONG,
         });
 
+        const embed = new EmbedBuilder(...safeJsonEmbed.embeds);
+
         const message = await eventAnnounceChannel
-          .send({ ...embed, components: [row] })
+          .send({
+            content: guild.settingsManagement.announcementRoleId
+              ? roleMention(guild.settingsManagement.announcementRoleId)
+              : '',
+            embeds: [embed],
+            components: [row],
+          })
           .catch(logger.error);
 
         if (message instanceof Message) {
