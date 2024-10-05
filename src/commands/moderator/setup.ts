@@ -55,9 +55,28 @@ export class Command {
 
   @ButtonComponent({ id: '@button/roles-configure' })
   async roleHandler(ctx: ButtonInteraction<'cached'>) {
+    const buttonRow = [
+      new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
+        new ButtonBuilder()
+          .setLabel(`staff`)
+          .setStyle(ButtonStyle.Secondary)
+          .setCustomId('@button/staff-roles-configure'),
+        new ButtonBuilder()
+          .setLabel(`secondary`)
+          .setStyle(ButtonStyle.Secondary)
+          .setCustomId('@button/secondary-roles-configure'),
+      ),
+    ];
+
+    await ctx.reply({ components: buttonRow, ephemeral: true });
+    return;
+  }
+
+  @ButtonComponent({ id: '@button/staff-roles-configure' })
+  async staffRoleHandler(ctx: ButtonInteraction<'cached'>) {
     const modal = new ModalBuilder()
-      .setTitle('Roles configuration')
-      .setCustomId('@modal/roles-configure');
+      .setTitle('Staff Roles configuration')
+      .setCustomId('@modal/staff-roles-configure');
 
     const rows = [
       new ActionRowBuilder<TextInputBuilder>().addComponents(
@@ -120,8 +139,8 @@ export class Command {
     await ctx.showModal(modal);
   }
 
-  @ModalComponent({ id: '@modal/roles-configure' })
-  async roleModalHandler(ctx: ModalSubmitInteraction<'cached'>) {
+  @ModalComponent({ id: '@modal/staff-roles-configure' })
+  async staffRoleModalHandler(ctx: ModalSubmitInteraction<'cached'>) {
     const [eventsmodeRoleId, coachRoleId, curatorRoleId, moderatorRoleId, adminRoleId] = [
       '@modal/field-eventsmode-id',
       '@modal/field-coach-id',
@@ -138,7 +157,56 @@ export class Command {
       adminRoleId,
     });
 
-    await ctx.reply({ content: 'All roles are successfully configured', ephemeral: true });
+    await ctx.reply({ content: 'Staff roles are successfully configured', ephemeral: true });
+
+    return;
+  }
+
+  @ButtonComponent({ id: '@button/secondary-roles-configure' })
+  async secondaryRoleHandler(ctx: ButtonInteraction<'cached'>) {
+    const modal = new ModalBuilder()
+      .setTitle('Secondary Roles configuration')
+      .setCustomId('@modal/secondary-roles-configure');
+
+    const rows = [
+      new ActionRowBuilder<TextInputBuilder>().addComponents(
+        new TextInputBuilder()
+          .setCustomId('@modal/field-announcement-id')
+          .setLabel('Announcement Role Id')
+          .setStyle(TextInputStyle.Short)
+          .setMinLength(18)
+          .setMaxLength(20),
+      ),
+    ];
+
+    const guild = await Guild.findOneBy({ id: ctx.guild.id });
+
+    if (guild && guild.settingsManagement.announcementRoleId) {
+      const { announcementRoleId } = guild.settingsManagement;
+
+      const roleIds = [announcementRoleId];
+
+      for (const [index, row] of rows.entries()) {
+        row.components[0].setValue(roleIds[index]);
+        row.components[0].setPlaceholder(roleIds[index]);
+      }
+    }
+
+    modal.addComponents(rows);
+    await ctx.showModal(modal);
+  }
+
+  @ModalComponent({ id: '@modal/secondary-roles-configure' })
+  async secondaryRoleModalHandler(ctx: ModalSubmitInteraction<'cached'>) {
+    const [announcementRoleId] = ['@modal/field-announcement-id'].map((id) =>
+      ctx.fields.getTextInputValue(id),
+    );
+
+    await this.settingsManagementService.createOrUpdateRoles(ctx.guild.id, {
+      announcementRoleId,
+    });
+
+    await ctx.reply({ content: 'Secondary roles are successfully configured', ephemeral: true });
 
     return;
   }

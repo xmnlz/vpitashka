@@ -6,11 +6,12 @@ import { Database } from '../../../database/data-source.js';
 import { SettingsManagement } from './settings-management.entity.js';
 
 interface RoleObject {
-  eventsmodeRoleId: Snowflake;
-  coachRoleId: Snowflake;
-  curatorRoleId: Snowflake;
-  moderatorRoleId: Snowflake;
-  adminRoleId: Snowflake;
+  eventsmodeRoleId?: Snowflake;
+  coachRoleId?: Snowflake;
+  curatorRoleId?: Snowflake;
+  moderatorRoleId?: Snowflake;
+  adminRoleId?: Snowflake;
+  announcementRoleId?: Snowflake;
 }
 
 interface ChannelsObject {
