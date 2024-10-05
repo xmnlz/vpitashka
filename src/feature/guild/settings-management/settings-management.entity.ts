@@ -50,6 +50,9 @@ export class SettingsManagement extends BaseEntity {
   adminRoleId: Snowflake;
 
   @Column('text', { nullable: true })
+  announcementRoleId: Snowflake;
+
+  @Column('text', { nullable: true })
   eventsmodeCategoryId: Snowflake;
 
   @Column('text', { nullable: true })
