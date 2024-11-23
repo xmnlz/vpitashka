@@ -88,8 +88,8 @@ export class Command {
           `${index + 1}. $1 - Недельная Зарплата: $2, Время за неделю: $3, Количество ивентов: $4`,
           [
             userWithMentionAndId(userId),
-            weeklyTime.toString(),
-            humanizeMinutes(weeklySalary),
+            weeklySalary.toString(),
+            humanizeMinutes(weeklyTime),
             eventCount.toString(),
           ],
         ),
