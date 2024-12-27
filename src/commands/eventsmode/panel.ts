@@ -235,7 +235,7 @@ export class Command {
 
     ctx.message.embeds[0].fields.push({
       name: 'Статус ивента',
-      value: `${!isPaused ? 'На паузе' : 'Активен'}`,
+      value: `${isPaused ? 'На паузе' : 'Активен'}`,
       inline: true,
     });
 
@@ -250,7 +250,7 @@ export class Command {
         template: `$1 $2 ивент $3`,
         replaceArgs: [
           userWithNameAndId(ctx.user),
-          !isPaused ? 'поставил на паузу' : 'снял с паузы',
+          isPaused ? 'поставил на паузу' : 'снял с паузы',
           event.category + ' | ' + event.name,
         ],
       }),
