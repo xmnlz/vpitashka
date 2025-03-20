@@ -68,39 +68,50 @@ export class Command {
       [ctx.guild.id],
     );
 
-    if (!eventsmode.length) {
-      throw new CommandError({
-        ctx,
-        content: embedResponse({
-          template: `Статистика пуста.`,
-          replaceArgs: [],
-          ephemeral: true,
-          status: Colors.DANGER,
-        }),
-      });
-    }
+    const eventBreakdown: { eventName: string; totalPlayedTime: number }[] =
+      await WeeklyEventHistory.query(
+        `
+        SELECT event.name as "eventName",
+               SUM(weekly_event_history.totalTime) as "totalPlayedTime"
+        FROM public.weekly_event_history
+        LEFT JOIN event ON weekly_event_history.event_id = event.id
+        WHERE weekly_event_history.guild_id = $1
+        GROUP BY event.name
+      `,
+        [ctx.guild.id],
+      );
+
+    const eventBreakdownLines = eventBreakdown.map(
+      ({ eventName, totalPlayedTime }) => `${eventName}: ${humanizeMinutes(totalPlayedTime)}`,
+    );
 
     const generalStatistics = `Топ 1 за неделю: ${userWithMentionAndId(topWeekUserId)}`;
 
-    const textChunks = chunks(
-      eventsmode.map(({ userId, weeklyTime, weeklySalary, eventCount }, index) =>
-        interpolate(
-          `${index + 1}. $1 - Недельная Зарплата: $2, Время за неделю: $3, Количество ивентов: $4`,
-          [
-            userWithMentionAndId(userId),
-            weeklySalary.toString(),
-            humanizeMinutes(weeklyTime),
-            eventCount.toString(),
-          ],
-        ),
+    const userLines = eventsmode.map(({ userId, weeklyTime, weeklySalary, eventCount }, index) =>
+      interpolate(
+        `${index + 1}. $1 - Недельная Зарплата: $2, Время за неделю: $3, Количество ивентов: $4`,
+        [
+          userWithMentionAndId(userId),
+          weeklySalary.toString(),
+          humanizeMinutes(weeklyTime),
+          eventCount.toString(),
+        ],
       ),
-      35,
     );
+
+    const textChunks = chunks(userLines, 35);
 
     const embeds = textChunks.map((textArray) => {
       const embed = new EmbedBuilder();
       embed.setColor(Colors.INFO);
-      embed.setDescription(codeBlock(title) + generalStatistics + `\n${textArray.join('\n')}`);
+      const description =
+        codeBlock(title) +
+        generalStatistics +
+        `\n\nСводка по ивентам:\n` +
+        eventBreakdownLines.join('\n') +
+        `\n\n` +
+        textArray.join('\n');
+      embed.setDescription(description);
       return embed;
     });
 
@@ -112,6 +123,6 @@ export class Command {
 
     await this.eventsmodeService.resetWeekly(ctx.guild.id);
 
-    await ctx.editReply({ content: 'Недельная статистика была успешно сброшенна! ' });
+    await ctx.editReply({ content: 'Недельная статистика была успешно сброшенна!' });
   }
 }
