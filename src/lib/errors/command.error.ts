@@ -22,7 +22,7 @@ export class CommandError extends Error {
     const { ctx, content } = this.props;
 
     if (ctx.deferred) {
-      await ctx.editReply(content);
+      await ctx.editReply(content as any);
       return;
     }
 
