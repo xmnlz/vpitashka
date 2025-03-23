@@ -72,7 +72,7 @@ export class Command {
       await WeeklyEventHistory.query(
         `
         SELECT event.name as "eventName",
-               SUM(weekly_event_history.totalTime) as "totalPlayedTime"
+               SUM(weekly_event_history.total_time) as "totalPlayedTime"
         FROM public.weekly_event_history
         LEFT JOIN event ON weekly_event_history.event_id = event.id
         WHERE weekly_event_history.guild_id = $1
