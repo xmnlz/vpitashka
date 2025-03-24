@@ -8,14 +8,13 @@ export const banCommand = createCommand({
   name: "ban",
   description: "Ban a user",
   context: [InteractionContextType.Guild],
-  handler: async (interaction, args) => {
-    // args.target is correctly inferred as `string` (User ID)
+  handler: async (interaction) => {
     await interaction.reply(`🔨 Banned user <@${interaction.toString()}>`);
   },
 });
 
 export const testCommand = createCommand({
-  name: "adwadadaw",
+  name: "test",
   description: "Ban a user",
   context: [InteractionContextType.Guild],
   options: {
@@ -29,7 +28,6 @@ export const testCommand = createCommand({
   handler: async (interaction, args) => {
     console.log(args);
 
-    args.user;
     await interaction.reply(`${JSON.stringify(args)}`);
   },
 });
