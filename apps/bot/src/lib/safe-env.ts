@@ -6,6 +6,8 @@ const envSchema = z.object({
 
   BOT_TOKEN: z.string(),
 
+  DEV_GUILD_ID: z.string(),
+
   DATABASE_HOST: z.string(),
   DATABASE_PORT: z.string(),
   DATABASE_NAME: z.string(),
