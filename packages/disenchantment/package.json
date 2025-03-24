@@ -1,0 +1,16 @@
+{
+  "name": "disenchantment",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "discord.js": "^14.18.0"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.5"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "main": "./src/index.ts"
+}

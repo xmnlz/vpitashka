@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "lib": ["esnext"],
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleDetection": "force",
+    
+    "moduleResolution": "bundler",
+    "verbatimModuleSyntax": true,
+    "noEmit": true,
+
+    "strict": true,
+    "skipLibCheck": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+
+    // Some stricter flags 
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noPropertyAccessFromIndexSignature": false
+  },
+  "exclude": ["build", "dist", "node_modules"]
+}

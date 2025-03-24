@@ -1,0 +1,15 @@
+{
+  "name": "eladora",
+  "private": true,
+  "workspaces": ["packages/*"],
+  "dependencies": {
+    "@types/bun": "^1.2.0",
+    "prettier": "^3.4.2"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.9.4",
+    "@ianvs/prettier-plugin-sort-imports": "^4.4.1",
+    "prettier-plugin-tailwindcss": "^0.6.10"
+  },
+  "trustedDependencies": ["@biomejs/biome"]
+}
