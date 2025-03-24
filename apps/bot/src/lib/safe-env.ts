@@ -22,9 +22,8 @@ export const safeEnv = () => {
 };
 
 declare global {
-  // TODO: Remove this if proccess.env would return the same as env from bun
   namespace NodeJS {
-    // interface ProcessEnv extends z.infer<typeof envSchema> {}
+    interface ProcessEnv extends z.infer<typeof envSchema> {}
   }
 
   interface BunEnv extends z.infer<typeof envSchema> {}

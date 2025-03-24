@@ -6,6 +6,7 @@ import {
 import { Client, IntentsBitField, type Interaction } from "discord.js";
 import { safeEnv } from "./lib/safe-env";
 import { adminGroup, someNewGroup, testCommand } from "./commands/ping";
+// import { env } from "process";
 import { env } from "bun";
 
 safeEnv();
@@ -20,9 +21,10 @@ const bot = await createBot({
 });
 
 async function bootstrap() {
-  if (!env.BOT_TOKEN) {
-    return console.error("Could not find BOT_TOKEN in your environment");
-  }
+  // if (!env.BOT_TOKEN) {
+  //   return console.error("Could not find BOT_TOKEN in your environment");
+  // }
+  //
 
   await bot.login(env.BOT_TOKEN);
 }
