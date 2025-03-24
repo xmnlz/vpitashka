@@ -1,4 +1,3 @@
-import { throws } from "assert";
 import { env } from "process";
 import { z } from "zod";
 
