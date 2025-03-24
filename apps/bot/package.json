@@ -1,5 +1,8 @@
 {
   "name": "@eladora/bot",
+  "scripts": {
+    "dev": "tsc && bun run src/main.ts",
+  },
   "dependencies": {
     "discord.js": "^14.17.3",
     "discordx": "^11.12.2",
