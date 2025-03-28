@@ -1,14 +1,10 @@
-import type {
-  SimpleCommand,
-  SubcommandGroup,
-  TopLevelCommandGroup,
-} from "./command.js";
+import type { SimpleCommand, SubcommandGroup } from "./command.js";
 
 export const group = (
   name: string,
   description: string,
   commands: (SubcommandGroup | SimpleCommand<any>)[],
-): SubcommandGroup | TopLevelCommandGroup => ({
+): SubcommandGroup => ({
   type: "group",
   name,
   description,

@@ -3,7 +3,7 @@ import type {
   SimpleCommand,
   SubcommandGroup,
 } from "./command.js";
-import { registerOption, type OptionsMap } from "./option.js";
+import { registerOption, type Options } from "./option.js";
 
 import {
   type RESTPostAPIChatInputApplicationCommandsJSONBody,
@@ -42,17 +42,14 @@ export const flattenCommands = (
   return commandMap;
 };
 
-/**
- * Converts our command definitions into the JSON format required by Discord’s REST API.
- */
 export const registerCommands = (
-  commands: readonly CommandOrCommandGroup[],
+  commands: CommandOrCommandGroup[],
 ): RESTPostAPIChatInputApplicationCommandsJSONBody[] => {
   const restCommandsBody: RESTPostAPIChatInputApplicationCommandsJSONBody[] =
     [];
 
   const traverse = (
-    cmds: readonly (SimpleCommand<OptionsMap> | SubcommandGroup)[],
+    cmds: (SimpleCommand | SubcommandGroup)[],
     builder?: SlashCommandBuilder | SlashCommandSubcommandGroupBuilder,
   ) => {
     cmds.forEach((cmd) => {
@@ -63,7 +60,7 @@ export const registerCommands = (
 
             if (cmd.options) {
               Object.values(cmd.options).forEach((option) =>
-                registerOption(subCmdBuilder, option),
+                registerOption(subCmdBuilder, option as Options),
               );
             }
 
@@ -77,7 +74,7 @@ export const registerCommands = (
 
           if (cmd.options) {
             Object.values(cmd.options).forEach((option) =>
-              registerOption(cmdBuilder, option),
+              registerOption(cmdBuilder, option as Options),
             );
           }
 

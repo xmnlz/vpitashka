@@ -12,53 +12,53 @@ import {
 } from "discord.js";
 
 export type Options =
-  | OptionInterface<ApplicationCommandOptionType.String, string, boolean>
-  | OptionInterface<ApplicationCommandOptionType.Integer, string, boolean>
-  | OptionInterface<ApplicationCommandOptionType.Number, string, boolean>
-  | OptionInterface<ApplicationCommandOptionType.Boolean, string, boolean>
-  | OptionInterface<ApplicationCommandOptionType.User, string, boolean>
-  | OptionInterface<ApplicationCommandOptionType.Channel, string, boolean>
-  | OptionInterface<ApplicationCommandOptionType.Role, string, boolean>
-  | OptionInterface<ApplicationCommandOptionType.Mentionable, string, boolean>
-  | OptionInterface<ApplicationCommandOptionType.Attachment, string, boolean>;
+  | OptionInterface<ApplicationCommandOptionType.String>
+  | OptionInterface<ApplicationCommandOptionType.Integer>
+  | OptionInterface<ApplicationCommandOptionType.Number>
+  | OptionInterface<ApplicationCommandOptionType.Boolean>
+  | OptionInterface<ApplicationCommandOptionType.User>
+  | OptionInterface<ApplicationCommandOptionType.Channel>
+  | OptionInterface<ApplicationCommandOptionType.Role>
+  | OptionInterface<ApplicationCommandOptionType.Mentionable>
+  | OptionInterface<ApplicationCommandOptionType.Attachment>;
 
 interface ChoiceOption<T extends number | string> {
   name: string;
   value: T;
 }
 
-export type StringChoice = ChoiceOption<string>;
-export type NumberChoice = ChoiceOption<number>;
+type StringChoice = ChoiceOption<string>;
+type NumberChoice = ChoiceOption<number>;
 
-export interface StringOptionExtra {
+interface StringOptionExtra {
   autocomplete?: boolean;
   choices?: StringChoice;
   maxLength?: number;
   minLength?: number;
 }
 
-export interface IntegerOptionExtra {
+interface IntegerOptionExtra {
   autocomplete?: boolean;
   choices?: NumberChoice;
   maxValue?: number;
   minValue?: number;
 }
 
-export interface NumberOptionExtra {
+interface NumberOptionExtra {
   autocomplete?: boolean;
   choices?: NumberChoice;
   maxValue?: number;
   minValue?: number;
 }
 
-export interface ChannelOptionExtra {
+interface ChannelOptionExtra {
   channelTypes?: Exclude<
     ChannelType,
     ChannelType.GroupDM | ChannelType.DM | ChannelType.GuildDirectory
   >[];
 }
 
-export type OptionExtra<T extends ApplicationCommandOptionType> =
+type OptionExtra<T extends ApplicationCommandOptionType> =
   T extends ApplicationCommandOptionType.String
     ? StringOptionExtra
     : T extends ApplicationCommandOptionType.Integer
@@ -70,9 +70,9 @@ export type OptionExtra<T extends ApplicationCommandOptionType> =
           : never;
 
 export interface OptionInterface<
-  T extends ApplicationCommandOptionType,
-  N extends string,
-  R extends boolean,
+  T extends ApplicationCommandOptionType = ApplicationCommandOptionType,
+  N extends string = string,
+  R extends boolean = boolean,
 > {
   name: N;
   description: string;
@@ -81,7 +81,7 @@ export interface OptionInterface<
   extra?: OptionExtra<T>;
 }
 
-export type Option = <
+type Option = <
   T extends ApplicationCommandOptionType,
   N extends string,
   R extends boolean,
@@ -93,9 +93,11 @@ export const option: Option = (options) => {
   return options;
 };
 
-export type OptionsMap<T extends string = string> = Record<T, Options>;
+export type OptionsMap<T extends Record<string, OptionInterface> = {}> = {
+  [K in keyof T]: T[K];
+};
 
-export type OptionTypeMap = {
+type OptionTypeMap = {
   [ApplicationCommandOptionType.String]: string;
   [ApplicationCommandOptionType.Integer]: number;
   [ApplicationCommandOptionType.Boolean]: boolean;
@@ -109,8 +111,10 @@ export type OptionTypeMap = {
 export type OptionValue<T extends ApplicationCommandOptionType> =
   T extends keyof OptionTypeMap ? OptionTypeMap[T] : unknown;
 
-export type ExtractArgs<T extends OptionsMap> = {
-  [K in keyof T]: OptionValue<T[K]["type"]>;
+export type ExtractArgs<T extends OptionsMap<any>> = {
+  [K in keyof T]: T[K]["required"] extends true
+    ? OptionValue<T[K]["type"]>
+    : OptionValue<T[K]["type"]> | undefined;
 };
 
 /**

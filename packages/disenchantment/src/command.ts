@@ -17,12 +17,10 @@ export interface SubcommandGroup {
   type: "group";
   name: string;
   description: string;
-  commands: readonly (SimpleCommand<any> | SubcommandGroup)[];
+  commands: (SimpleCommand | SubcommandGroup)[];
 }
 
-export type TopLevelCommandGroup = SubcommandGroup;
-
-export type CommandOrCommandGroup = SimpleCommand<any> | SubcommandGroup;
+export type CommandOrCommandGroup = SimpleCommand | SubcommandGroup;
 
 export type CommandHandler<T extends OptionsMap> = (
   interaction: ChatInputCommandInteraction,
