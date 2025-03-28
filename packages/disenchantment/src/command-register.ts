@@ -42,67 +42,100 @@ export const flattenCommands = (
   return commandMap;
 };
 
+/**
+ * Registers commands as Discord JSON bodies.
+ *
+ * This function recursively registers both simple commands and command groups.
+ *
+ * @param commands - Array of commands or command groups.
+ * @returns Array of JSON bodies for Discord slash commands.
+ */
 export const registerCommands = (
   commands: CommandOrCommandGroup[],
 ): RESTPostAPIChatInputApplicationCommandsJSONBody[] => {
   const restCommandsBody: RESTPostAPIChatInputApplicationCommandsJSONBody[] =
     [];
 
+  /**
+   * Registers a simple command on the provided builder.
+   *
+   * @param cmd - The simple command to register.
+   * @param builder - Optional builder to which the command is added as a subcommand.
+   */
+  const registerSimpleCommand = (
+    cmd: SimpleCommand<any>,
+    builder?: SlashCommandBuilder | SlashCommandSubcommandGroupBuilder,
+  ) => {
+    if (builder) {
+      builder.addSubcommand((subCmdBuilder) => {
+        subCmdBuilder.setName(cmd.name).setDescription(cmd.description);
+        if (cmd.options) {
+          Object.values(cmd.options).forEach((option) =>
+            registerOption(subCmdBuilder, option as Options),
+          );
+        }
+        return subCmdBuilder;
+      });
+    } else {
+      const cmdBuilder = new SlashCommandBuilder()
+        .setName(cmd.name)
+        .setDescription(cmd.description)
+        .setContexts(cmd.context);
+      if (cmd.options) {
+        Object.values(cmd.options).forEach((option) =>
+          registerOption(cmdBuilder, option as Options),
+        );
+      }
+      restCommandsBody.push(cmdBuilder.toJSON());
+    }
+  };
+
+  /**
+   * Registers a command group on the provided builder.
+   *
+   * @param groupCmd - The command group to register.
+   * @param builder - Optional builder to which the group is added.
+   */
+  const registerCommandGroup = (
+    groupCmd: SubcommandGroup,
+    builder?: SlashCommandBuilder | SlashCommandSubcommandGroupBuilder,
+  ) => {
+    if (builder && builder instanceof SlashCommandBuilder) {
+      builder.addSubcommandGroup((subGroupBuilder) => {
+        subGroupBuilder
+          .setName(groupCmd.name)
+          .setDescription(groupCmd.description);
+        traverse(groupCmd.commands, subGroupBuilder);
+        return subGroupBuilder;
+      });
+    } else {
+      const groupBuilder = new SlashCommandBuilder()
+        .setName(groupCmd.name)
+        .setDescription(groupCmd.description);
+      traverse(groupCmd.commands, groupBuilder);
+      restCommandsBody.push(groupBuilder.toJSON());
+    }
+  };
+
+  /**
+   * Recursively traverses and registers commands with an optional builder.
+   *
+   * @param cmds - Array of simple commands or command groups.
+   * @param builder - Optional builder for nesting commands.
+   */
   const traverse = (
-    cmds: (SimpleCommand | SubcommandGroup)[],
+    cmds: (SimpleCommand<any> | SubcommandGroup)[],
     builder?: SlashCommandBuilder | SlashCommandSubcommandGroupBuilder,
   ) => {
     cmds.forEach((cmd) => {
       if (cmd.type === "command") {
-        if (builder) {
-          builder.addSubcommand((subCmdBuilder) => {
-            subCmdBuilder.setName(cmd.name).setDescription(cmd.description);
-
-            if (cmd.options) {
-              Object.values(cmd.options).forEach((option) =>
-                registerOption(subCmdBuilder, option as Options),
-              );
-            }
-
-            return subCmdBuilder;
-          });
-        } else {
-          const cmdBuilder = new SlashCommandBuilder()
-            .setName(cmd.name)
-            .setDescription(cmd.description)
-            .setContexts(cmd.context);
-
-          if (cmd.options) {
-            Object.values(cmd.options).forEach((option) =>
-              registerOption(cmdBuilder, option as Options),
-            );
-          }
-
-          restCommandsBody.push(cmdBuilder.toJSON());
-        }
+        registerSimpleCommand(cmd, builder);
       } else if (cmd.type === "group") {
-        if (builder && builder instanceof SlashCommandBuilder) {
-          builder.addSubcommandGroup((subGroupBuilder) => {
-            subGroupBuilder.setName(cmd.name).setDescription(cmd.description);
-            traverse(cmd.commands, subGroupBuilder);
-            return subGroupBuilder;
-          });
-        } else {
-          const builder = new SlashCommandBuilder()
-            .setName(cmd.name)
-            .setDescription(cmd.description);
-
-          traverse(cmd.commands, builder);
-
-          restCommandsBody.push(builder.toJSON());
-        }
+        registerCommandGroup(cmd, builder);
       }
     });
   };
 
   traverse(commands);
-
-  console.log(JSON.stringify(restCommandsBody, null, 4));
-
   return restCommandsBody;
 };
