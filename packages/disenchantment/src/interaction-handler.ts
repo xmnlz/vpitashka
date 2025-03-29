@@ -11,6 +11,57 @@ import {
 } from "./option.js";
 import { MetadataStorage } from "./metadata-storage.js";
 
+const optionExtractors: Record<
+  ApplicationCommandOptionType,
+  (
+    interaction: ChatInputCommandInteraction,
+    name: string,
+    required: boolean,
+  ) => unknown
+> = {
+  [ApplicationCommandOptionType.Subcommand]: () => null, // Placeholder
+  [ApplicationCommandOptionType.SubcommandGroup]: () => null, // Placeholder
+  [ApplicationCommandOptionType.String]: (interaction, name, required) =>
+    interaction.options.getString(name, required),
+  [ApplicationCommandOptionType.Integer]: (interaction, name, required) =>
+    interaction.options.getInteger(name, required),
+  [ApplicationCommandOptionType.Number]: (interaction, name, required) =>
+    interaction.options.getNumber(name, required),
+  [ApplicationCommandOptionType.Boolean]: (interaction, name, required) =>
+    interaction.options.getBoolean(name, required),
+  [ApplicationCommandOptionType.User]: (interaction, name, required) =>
+    interaction.options.getUser(name, required),
+  [ApplicationCommandOptionType.Channel]: (interaction, name, required) =>
+    interaction.options.getChannel(name, required),
+  [ApplicationCommandOptionType.Role]: (interaction, name, required) =>
+    interaction.options.getRole(name, required),
+  [ApplicationCommandOptionType.Mentionable]: (interaction, name, required) =>
+    interaction.options.getMentionable(name, required),
+  [ApplicationCommandOptionType.Attachment]: (interaction, name, required) =>
+    interaction.options.getAttachment(name, required),
+};
+
+export const parseOptions = <
+  T extends OptionsMap<Record<string, OptionInterface>>,
+>(
+  interaction: ChatInputCommandInteraction,
+  options: T,
+): ExtractArgs<T> => {
+  const args: Record<string, unknown> = {};
+
+  for (const [key, opt] of Object.entries(options)) {
+    const extractor = optionExtractors[opt.type];
+    if (!extractor) {
+      throw new Error(`Unsupported option type: ${opt.type}`);
+    }
+    args[key] = extractor(interaction, opt.name, opt.required) as OptionValue<
+      T[typeof key]["type"]
+    >;
+  }
+
+  return args as ExtractArgs<T>;
+};
+
 const getCommandKey = (interaction: ChatInputCommandInteraction): string =>
   [
     interaction.commandName,
@@ -19,78 +70,6 @@ const getCommandKey = (interaction: ChatInputCommandInteraction): string =>
   ]
     .filter(Boolean)
     .join(" ");
-
-export const parseOptions = <
-  T extends OptionsMap<Record<string, OptionInterface>>,
->(
-  interaction: ChatInputCommandInteraction,
-  options: T,
-): ExtractArgs<T> => {
-  const args: Record<string, any> = {};
-
-  for (const [key, opt] of Object.entries(options)) {
-    const { name, required } = opt;
-
-    switch (opt.type) {
-      case ApplicationCommandOptionType.String:
-        args[key] = interaction.options.getString(
-          name,
-          required,
-        ) as OptionValue<(typeof opt)["type"]>;
-        break;
-      case ApplicationCommandOptionType.Integer:
-        args[key] = interaction.options.getInteger(
-          name,
-          required,
-        ) as OptionValue<T[typeof key]["type"]>;
-        break;
-      case ApplicationCommandOptionType.Number:
-        args[key] = interaction.options.getNumber(
-          name,
-          required,
-        ) as OptionValue<T[typeof key]["type"]>;
-        break;
-      case ApplicationCommandOptionType.Boolean:
-        args[key] = interaction.options.getBoolean(
-          name,
-          required,
-        ) as OptionValue<T[typeof key]["type"]>;
-        break;
-      case ApplicationCommandOptionType.User:
-        args[key] = interaction.options.getUser(name, required) as OptionValue<
-          T[typeof key]["type"]
-        >;
-        break;
-      case ApplicationCommandOptionType.Channel:
-        args[key] = interaction.options.getChannel(
-          name,
-          required,
-        ) as OptionValue<T[typeof key]["type"]>;
-        break;
-      case ApplicationCommandOptionType.Role:
-        args[key] = interaction.options.getRole(name, required) as OptionValue<
-          T[typeof key]["type"]
-        >;
-        break;
-      case ApplicationCommandOptionType.Mentionable:
-        args[key] = interaction.options.getMentionable(
-          name,
-          required,
-        ) as OptionValue<T[typeof key]["type"]>;
-        break;
-      case ApplicationCommandOptionType.Attachment:
-        args[key] = interaction.options.getAttachment(
-          name,
-          required,
-        ) as OptionValue<T[typeof key]["type"]>;
-        break;
-      default:
-        throw new Error(`Unsupported option type: ${opt}`);
-    }
-  }
-
-  return args as ExtractArgs<T>;
-};
 
 export const executeInteraction = async (
   interaction: ChatInputCommandInteraction,

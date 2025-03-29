@@ -20,7 +20,7 @@ export interface SubcommandGroup {
   commands: (SimpleCommand | SubcommandGroup)[];
 }
 
-export type CommandOrCommandGroup = SimpleCommand | SubcommandGroup;
+export type CommandOrCommandGroup = SimpleCommand<any> | SubcommandGroup;
 
 export type CommandHandler<T extends OptionsMap> = (
   interaction: ChatInputCommandInteraction,
