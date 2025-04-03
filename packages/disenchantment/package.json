@@ -6,12 +6,11 @@
   "scripts": {
     "lint": "tsc"
   },
-
   "dependencies": {
     "discord.js": "^14.18.0"
   },
   "devDependencies": {
-    "@types/bun": "^1.2.5"
+    "@types/bun": "^1.2.8"
   },
   "exports": {
     ".": "./src/index.ts"
