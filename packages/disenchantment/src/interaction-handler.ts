@@ -81,7 +81,6 @@ export const executeInteraction = async (
   if (!command) return;
 
   const composedGuards = composeGuards(command.guards || []);
-  console.log("reached composedGuards", composedGuards);
 
   const context: Record<string, any> = {};
 
