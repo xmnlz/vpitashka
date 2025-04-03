@@ -10,6 +10,7 @@ import {
   type OptionValue,
 } from "./option.js";
 import { MetadataStorage } from "./metadata-storage.js";
+import { composeGuards } from "./guard.js";
 
 const optionExtractors: Record<
   ApplicationCommandOptionType,
@@ -79,12 +80,20 @@ export const executeInteraction = async (
   const command = MetadataStorage.instance.simpleCommandMap.get(commandKey);
   if (!command) return;
 
-  if (command.options) {
-    const args = parseOptions(interaction, command.options);
-    await command.handler(interaction, args);
-  } else {
-    await command.handler(interaction, {});
-  }
+  const composedGuards = composeGuards(command.guards || []);
+  console.log("reached composedGuards", composedGuards);
+
+  const context: Record<string, any> = {};
+
+  await composedGuards(
+    interaction.client,
+    interaction,
+    async () => {
+      const options = parseOptions(interaction, command.options || {});
+      await command.handler(interaction, options, context);
+    },
+    context,
+  );
 };
 
 export const initApplicationCommands = async (

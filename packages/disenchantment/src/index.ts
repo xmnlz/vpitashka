@@ -7,3 +7,4 @@ export {
   initApplicationCommands,
 } from "./interaction-handler";
 export { option } from "./option.js";
+export { type GuardFn } from "./guard.js";

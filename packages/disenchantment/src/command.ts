@@ -3,14 +3,19 @@ import {
   type InteractionContextType,
 } from "discord.js";
 import { type ExtractArgs, type OptionsMap } from "./option.js";
+import type { GuardFn } from "./guard.js";
 
-export type SimpleCommand<T extends OptionsMap = OptionsMap> = {
+export type SimpleCommand<
+  T extends OptionsMap = OptionsMap,
+  C extends Record<string, any> = {},
+> = {
   type: "command";
   name: string;
   description: string;
   options?: T;
+  guards?: GuardFn<any, C>[];
   context: InteractionContextType[];
-  handler: CommandHandler<T>;
+  handler: CommandHandler<T, C>;
 };
 
 export interface SubcommandGroup {
@@ -22,14 +27,21 @@ export interface SubcommandGroup {
 
 export type CommandOrCommandGroup = SimpleCommand<any> | SubcommandGroup;
 
-export type CommandHandler<T extends OptionsMap> = (
+export type CommandHandler<
+  T extends OptionsMap,
+  C extends Record<string, any> = {},
+> = (
   interaction: ChatInputCommandInteraction,
   args: ExtractArgs<T>,
+  context: C,
 ) => Promise<void>;
 
-export const createCommand = <T extends OptionsMap>(
-  config: Omit<SimpleCommand<T>, "type">,
-): SimpleCommand<T> => ({
+export const createCommand = <
+  T extends OptionsMap,
+  C extends Record<string, any> = {},
+>(
+  config: Omit<SimpleCommand<T, C>, "type">,
+): SimpleCommand<T, C> => ({
   type: "command",
   ...config,
 });
