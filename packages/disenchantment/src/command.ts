@@ -7,7 +7,7 @@ import type { GuardFn } from "./guard.js";
 
 export type SimpleCommand<
   T extends OptionsMap = OptionsMap,
-  C extends Record<string, any> = {},
+  C extends Record<string, any> = any,
 > = {
   type: "command";
   name: string;
