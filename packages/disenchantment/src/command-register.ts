@@ -79,8 +79,7 @@ export const registerCommands = (
     } else {
       const cmdBuilder = new SlashCommandBuilder()
         .setName(cmd.name)
-        .setDescription(cmd.description)
-        .setContexts(cmd.context);
+        .setDescription(cmd.description);
       if (cmd.options) {
         Object.values(cmd.options).forEach((option) =>
           registerOption(cmdBuilder, option as Options),

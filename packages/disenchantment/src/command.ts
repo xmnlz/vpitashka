@@ -1,7 +1,4 @@
-import {
-  ChatInputCommandInteraction,
-  type InteractionContextType,
-} from "discord.js";
+import { ChatInputCommandInteraction } from "discord.js";
 import { type ExtractArgs, type OptionsMap } from "./option.js";
 import type { GuardFn } from "./guard.js";
 
@@ -14,7 +11,6 @@ export type SimpleCommand<
   description: string;
   options?: T;
   guards?: GuardFn<any, C>[];
-  context: InteractionContextType[];
   handler: CommandHandler<T, C>;
 };
 
