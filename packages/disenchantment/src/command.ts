@@ -27,11 +27,15 @@ export type CommandHandler<
   T extends OptionsMap,
   C extends Record<string, any> = {},
 > = (
-  interaction: ChatInputCommandInteraction,
+  /**
+   * The interaction is intentionally typed as `any` to grant user
+   * control on the specific type they want to use for their use case—e.g.,
+   * `ChatInputCommandInteraction<'cached'>` or `ChatInputCommandInteraction<'raw'>`.
+   */
+  interaction: any,
   args: ExtractArgs<T>,
   context: C,
 ) => Promise<void>;
-
 export const createCommand = <
   T extends OptionsMap,
   C extends Record<string, any> = {},
