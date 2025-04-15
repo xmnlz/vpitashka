@@ -1,4 +1,3 @@
-import { ChatInputCommandInteraction } from "discord.js";
 import { type ExtractArgs, type OptionsMap } from "./option.js";
 import type { GuardFn } from "./guard.js";
 
