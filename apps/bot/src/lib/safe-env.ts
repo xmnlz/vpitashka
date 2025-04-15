@@ -13,25 +13,14 @@ const envSchema = z.object({
   DATABASE_PASS: z.string(),
 });
 
-export const safeEnv = () => {
+const parsed = envSchema.safeParse(env);
 
-  if (!success) {
-    console.error("Invalid environment variables:");
-
-    error.format();
-
-    for (const issue of error.issues) {
-      console.error(`- ${issue.path.join(".")}: ${issue.message}`);
-    }
-
-    throw new Error("Failed to parse environment variables");
+if (!parsed.success) {
+  console.error("❌ Invalid environment variables:");
+  for (const issue of parsed.error.issues) {
+    console.error(`- ${issue.path.join(".")}: ${issue.message}`);
   }
-};
-
-declare global {
-  namespace NodeJS {
-    interface ProcessEnv extends z.infer<typeof envSchema> {}
-  }
-
-  interface Env extends z.infer<typeof envSchema> {}
+  throw new Error("Failed to parse environment variables");
 }
+
+export const config = parsed.data;
