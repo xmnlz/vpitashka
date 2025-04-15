@@ -1,19 +1,19 @@
 {
   "name": "@eladora/bot",
   "scripts": {
-    "dev": "tsc && bun run src/main.ts",
+    "dev": "tsc && bun run src/main.ts"
   },
   "dependencies": {
     "discord.js": "^14.17.3",
     "discordx": "^11.12.2",
     "disenchantment": "workspace:*",
-    "drizzle-orm": "^0.38.4",
-    "pg": "^8.13.1",
+    "drizzle-orm": "^0.41.0",
+    "pg": "^8.14.1",
     "zod": "^3.24.1"
   },
   "devDependencies": {
-    "@types/pg": "^8.11.10",
-    "drizzle-kit": "^0.30.2",
+    "@types/pg": "^8.11.12",
+    "drizzle-kit": "^0.30.6",
     "tsx": "^4.19.2",
     "typescript": "^5.7.3"
   }
