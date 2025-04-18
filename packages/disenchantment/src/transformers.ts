@@ -3,6 +3,7 @@ import type {
   SimpleCommand,
   SubcommandGroup,
 } from "./command.js";
+import type { EventHandler, SimpleEvent } from "./event.js";
 import { registerOption, type Options } from "./option.js";
 
 import {
@@ -11,7 +12,7 @@ import {
   SlashCommandSubcommandGroupBuilder,
 } from "discord.js";
 
-export const flattenCommands = (
+export const flattenCommandTree = (
   commands: readonly CommandOrCommandGroup[],
 ): Map<string, SimpleCommand<any>> => {
   const commandMap = new Map<string, SimpleCommand<any>>();
@@ -42,27 +43,13 @@ export const flattenCommands = (
   return commandMap;
 };
 
-/**
- * Registers commands as Discord JSON bodies.
- *
- * This function recursively registers both simple commands and command groups.
- *
- * @param commands - Array of commands or command groups.
- * @returns Array of JSON bodies for Discord slash commands.
- */
-export const registerCommands = (
+export const serializeCommandsForAPI = (
   commands: CommandOrCommandGroup[],
 ): RESTPostAPIChatInputApplicationCommandsJSONBody[] => {
   const restCommandsBody: RESTPostAPIChatInputApplicationCommandsJSONBody[] =
     [];
 
-  /**
-   * Registers a simple command on the provided builder.
-   *
-   * @param cmd - The simple command to register.
-   * @param builder - Optional builder to which the command is added as a subcommand.
-   */
-  const registerSimpleCommand = (
+  const serializeSimpleCommand = (
     cmd: SimpleCommand<any>,
     builder?: SlashCommandBuilder | SlashCommandSubcommandGroupBuilder,
   ) => {
@@ -89,13 +76,7 @@ export const registerCommands = (
     }
   };
 
-  /**
-   * Registers a command group on the provided builder.
-   *
-   * @param groupCmd - The command group to register.
-   * @param builder - Optional builder to which the group is added.
-   */
-  const registerCommandGroup = (
+  const serializeCommandGroup = (
     groupCmd: SubcommandGroup,
     builder?: SlashCommandBuilder | SlashCommandSubcommandGroupBuilder,
   ) => {
@@ -116,25 +97,47 @@ export const registerCommands = (
     }
   };
 
-  /**
-   * Recursively traverses and registers commands with an optional builder.
-   *
-   * @param cmds - Array of simple commands or command groups.
-   * @param builder - Optional builder for nesting commands.
-   */
   const traverse = (
     cmds: (SimpleCommand<any> | SubcommandGroup)[],
     builder?: SlashCommandBuilder | SlashCommandSubcommandGroupBuilder,
   ) => {
     cmds.forEach((cmd) => {
       if (cmd.type === "command") {
-        registerSimpleCommand(cmd, builder);
+        serializeSimpleCommand(cmd, builder);
       } else if (cmd.type === "group") {
-        registerCommandGroup(cmd, builder);
+        serializeCommandGroup(cmd, builder);
       }
     });
   };
 
   traverse(commands);
   return restCommandsBody;
+};
+
+export type EventHanlderMap = Map<
+  string,
+  { once: EventHandler<any>[]; on: EventHandler<any>[] }
+>;
+
+export const createEventHandlerMap = (events: SimpleEvent<any>[]) => {
+  const map: EventHanlderMap = new Map();
+
+  for (const { event, handler, once } of events) {
+    const record = map.get(event);
+
+    if (record) {
+      if (once) {
+        record.once.push(handler);
+      } else {
+        record.on.push(handler);
+      }
+    } else {
+      map.set(event, {
+        once: once ? [handler] : [],
+        on: once ? [] : [handler],
+      });
+    }
+  }
+
+  return map;
 };
