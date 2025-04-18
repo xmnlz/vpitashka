@@ -35,6 +35,7 @@ export type CommandHandler<
   args: ExtractArgs<T>,
   context: C,
 ) => Promise<void>;
+
 export const createCommand = <
   T extends OptionsMap,
   C extends Record<string, any> = {},
