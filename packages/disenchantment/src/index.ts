@@ -1,6 +1,7 @@
 export { createBot } from "./core.js";
 
 export { createCommand } from "./command.js";
+export { createEvent } from "./event.js";
 export { group } from "./group.js";
 export {
   executeInteraction,

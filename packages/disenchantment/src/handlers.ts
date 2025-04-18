@@ -11,6 +11,7 @@ import {
 } from "./option.js";
 import { MetadataStorage } from "./metadata-storage.js";
 import { composeGuards } from "./guard.js";
+import type { EventHanlderMap } from "./transformers.js";
 
 const optionExtractors: Record<
   ApplicationCommandOptionType,
@@ -42,7 +43,7 @@ const optionExtractors: Record<
     interaction.options.getAttachment(name, required),
 };
 
-export const parseOptions = <
+export const extractCommandOptions = <
   T extends OptionsMap<Record<string, OptionInterface>>,
 >(
   interaction: ChatInputCommandInteraction,
@@ -63,7 +64,7 @@ export const parseOptions = <
   return args as ExtractArgs<T>;
 };
 
-const getCommandKey = (interaction: ChatInputCommandInteraction): string =>
+const buildCommandKey = (interaction: ChatInputCommandInteraction): string =>
   [
     interaction.commandName,
     interaction.options.getSubcommandGroup(false),
@@ -72,10 +73,10 @@ const getCommandKey = (interaction: ChatInputCommandInteraction): string =>
     .filter(Boolean)
     .join(" ");
 
-export const executeInteraction = async (
+export const handleCommandInteraction = async (
   interaction: ChatInputCommandInteraction,
 ): Promise<void> => {
-  const commandKey = getCommandKey(interaction);
+  const commandKey = buildCommandKey(interaction);
 
   const command = MetadataStorage.instance.simpleCommandMap.get(commandKey);
   if (!command) return;
@@ -88,31 +89,24 @@ export const executeInteraction = async (
     interaction.client,
     interaction,
     async () => {
-      const options = parseOptions(interaction, command.options || {});
+      const options = extractCommandOptions(interaction, command.options || {});
       await command.handler(interaction, options, context);
     },
     context,
   );
 };
 
-export const initApplicationCommands = async (
+export function bindClientEventHandlers(
   client: Client,
-  guildIds?: string[],
-) => {
-  const restCommands = MetadataStorage.instance.commandJsonBodies;
+  eventMap: EventHanlderMap,
+): void {
+  for (const [eventName, { on, once }] of eventMap) {
+    on.forEach((handler) =>
+      client.on(eventName, (...args) => handler(client, ...args)),
+    );
 
-  if (guildIds && guildIds.length >= 1) {
-    for (let guildId of guildIds) {
-      const guild = client.guilds.cache.get(guildId);
-
-      if (guild) {
-        await guild.commands.set(restCommands);
-        return;
-      }
-
-      console.log(`Guild with id of ${guildId} can not be fetched from cache`);
-    }
-  } else {
-    await client.application?.commands.set(restCommands);
+    once.forEach((handler) =>
+      client.once(eventName, (...args) => handler(client, ...args)),
+    );
   }
-};
+}
