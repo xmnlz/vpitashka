@@ -1,38 +1,31 @@
-import {
-  createBot,
-  executeInteraction,
-  initApplicationCommands,
-} from "disenchantment";
-import { Client, IntentsBitField, type Interaction } from "discord.js";
-import { safeEnv } from "./lib/safe-env";
-import { adminGroup, someNewGroup, testCommand } from "./commands/ping";
-import { env } from "bun";
+import { createBot } from "disenchantment";
+import { IntentsBitField } from "discord.js";
+import { config } from "./lib/safe-env";
 
-safeEnv();
+import { eventmodeGroup } from "./commands/eventsmode";
 
-const { Guilds, GuildMembers, GuildMessages } = IntentsBitField.Flags;
+import { onceReadyEvent, readyEvent } from "./events/ready";
+import { interactionCreateEvent } from "./events/interaction-create";
+import { guildMemberRemoveEvent } from "./events/guild-member-remove";
 
-const bot = await createBot({
-  commands: [testCommand],
+const { Guilds, GuildMembers, GuildMessages, MessageContent } =
+  IntentsBitField.Flags;
+
+export const bot = await createBot({
+  commands: [eventmodeGroup],
+  events: [
+    onceReadyEvent,
+    readyEvent,
+    interactionCreateEvent,
+    guildMemberRemoveEvent,
+  ],
   clientOptions: {
-    intents: [Guilds, GuildMembers, GuildMessages],
+    intents: [Guilds, GuildMembers, GuildMessages, MessageContent],
   },
 });
 
 async function bootstrap() {
-  await bot.login(env.BOT_TOKEN);
-  bot.on("interactionCreate", async (interaction: Interaction) => {
-    if (!interaction.isChatInputCommand()) return;
-    await executeInteraction(interaction);
-  });
-
-  bot.on("ready", async (client: Client) => {
-    await client.guilds.fetch();
-
-    initApplicationCommands(client, [env.DEV_GUILD_ID]);
-
-    console.log("LGTM!!!");
-  });
+  await bot.login(config.BOT_TOKEN);
 }
 
 bootstrap();

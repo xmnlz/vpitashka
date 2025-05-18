@@ -1,6 +1,4 @@
 {
   "name": "@vpitashka/server",
-  "dependencies": {
-    "@vpitashka/bot": "workspace:*"
-  }
+  "dependencies": {}
 }

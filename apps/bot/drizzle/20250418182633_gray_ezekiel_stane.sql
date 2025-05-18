@@ -1,0 +1,1 @@
+ALTER TABLE "eventmode" ADD CONSTRAINT "eventmode_user_id_guild_id_unique" UNIQUE("user_id","guild_id");
