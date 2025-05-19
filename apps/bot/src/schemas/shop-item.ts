@@ -12,13 +12,13 @@ export const shopItem = pgTable("shop_item", {
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
-  shopId: text("shop_id")
+  shopId: uuid("shop_id")
     .notNull()
     .references(() => shop.id),
   guildId: text("guild_id")
     .notNull()
     .references(() => guild.id, { onDelete: "cascade" }),
-  createdBy: text("created_by")
+  createdBy: uuid("created_by")
     .notNull()
     .references(() => eventmode.id, {
       onDelete: "cascade",

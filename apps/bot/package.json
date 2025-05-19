@@ -1,7 +1,9 @@
 {
   "name": "@eladora/bot",
   "scripts": {
-    "dev": "tsc && bun run src/main.ts"
+    "dev": "tsc && bun run src/main.ts",
+    "generate": "drizzle-kit generate",
+    "migrate": "drizzle-kit migrate"
   },
   "dependencies": {
     "discord.js": "^14.19.3",

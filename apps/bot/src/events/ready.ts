@@ -1,14 +1,18 @@
-import { createEvent } from "disenchantment";
+import { createEvent, initApplicationCommands } from "disenchantment";
 import { db } from "../database/database";
 import { guild } from "../schemas/guild";
 import { guildLogger } from "../schemas/guild-logger";
+import { config } from "../lib/safe-env";
 
 export const onceReadyEvent = createEvent({
   once: true,
   event: "ready",
   handler: async (client) => {
     await client.guilds.fetch();
-    console.log("BOT STARTED");
+
+    await initApplicationCommands(client, [config.DEV_GUILD_ID]);
+
+    console.log(`bot started successfully! ${client.user?.username}`);
   },
 });
 

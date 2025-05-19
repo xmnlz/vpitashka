@@ -1,7 +1,7 @@
 import {
   ApplicationCommandOptionType,
   CommandInteraction,
-  GuildMember,
+  InteractionContextType,
 } from "discord.js";
 import { createCommand, guards, option } from "disenchantment";
 import { eventmode, permissionRole } from "../../schemas/eventmode";
@@ -12,6 +12,7 @@ import { permissionRoleGuard } from "../../guard/permission-role.guard";
 export const hire = createCommand({
   name: "hire",
   description: "Hire eventsmode",
+  context: [InteractionContextType.Guild],
   guards: guards(permissionRoleGuard(permissionRole.curator)),
   options: {
     user: option({
@@ -22,7 +23,6 @@ export const hire = createCommand({
     }),
   },
   handler: async (ctx: CommandInteraction<"cached">, { user }) => {
-    if (!(user instanceof GuildMember)) return;
     await ctx.deferReply();
 
     await db
@@ -35,7 +35,5 @@ export const hire = createCommand({
       .returning();
 
     await ctx.editReply("respect");
-
-    console.log(user);
   },
 });

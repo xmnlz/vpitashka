@@ -1,6 +1,3 @@
--- Create Extensions for UUIDs
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";--> statement-breakpoint
-
 CREATE TYPE "public"."event_state" AS ENUM('inactive', 'started', 'paused');--> statement-breakpoint
 CREATE TYPE "public"."event_history_type_enum" AS ENUM('weekly', 'global');--> statement-breakpoint
 CREATE TABLE "event_activitie" (
@@ -63,8 +60,10 @@ CREATE TABLE "eventmode" (
 	"total_salary" integer DEFAULT 0 NOT NULL,
 	"weekly_salary" integer DEFAULT 0 NOT NULL,
 	"hearts" integer DEFAULT 0 NOT NULL,
+	"reputation_score" integer DEFAULT 100 NOT NULL,
 	"favorite_event" text DEFAULT 'none' NOT NULL,
 	"hired_at" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "eventmode_user_id_guild_id_unique" UNIQUE("user_id","guild_id"),
 	CONSTRAINT "eventmode_permission_check" CHECK ("eventmode"."permission_role" BETWEEN 1 and 6)
 );
 --> statement-breakpoint
@@ -79,6 +78,22 @@ CREATE TABLE "guilds" (
 	"id" text PRIMARY KEY NOT NULL,
 	"is_enabled" boolean DEFAULT false NOT NULL,
 	"proto_settings" jsonb DEFAULT '{"general":{"minimumWeeklyQuota":300},"roles":{"adminRoleId":null,"moderatorRoleId":null,"curatorRoleId":null,"coachRoleId":null,"eventsmodeRoleId":null},"channels":{"eventCategoryId":null,"announceEventChannelId":null,"startedEventCategoryId":null},"features":{"eventAnnouncement":false,"eventAutoPayment":false,"eventActiveCategory":false}}'::jsonb NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "shop_item" (
+	"id" uuid PRIMARY KEY DEFAULT uuid_generate_v4() NOT NULL,
+	"name" text NOT NULL,
+	"description" text NOT NULL,
+	"price" integer NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"shop_id" uuid NOT NULL,
+	"guild_id" text NOT NULL,
+	"created_by" uuid NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "shop" (
+	"id" uuid PRIMARY KEY DEFAULT uuid_generate_v4() NOT NULL,
+	"guild_id" text NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "user" (
@@ -113,6 +128,10 @@ ALTER TABLE "event_history" ADD CONSTRAINT "event_history_guild_id_guilds_id_fk"
 ALTER TABLE "event" ADD CONSTRAINT "event_guild_id_guilds_id_fk" FOREIGN KEY ("guild_id") REFERENCES "public"."guilds"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "eventmode" ADD CONSTRAINT "eventmode_guild_id_guilds_id_fk" FOREIGN KEY ("guild_id") REFERENCES "public"."guilds"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "guild_logger" ADD CONSTRAINT "guild_logger_id_guilds_id_fk" FOREIGN KEY ("id") REFERENCES "public"."guilds"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "shop_item" ADD CONSTRAINT "shop_item_shop_id_shop_id_fk" FOREIGN KEY ("shop_id") REFERENCES "public"."shop"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "shop_item" ADD CONSTRAINT "shop_item_guild_id_guilds_id_fk" FOREIGN KEY ("guild_id") REFERENCES "public"."guilds"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "shop_item" ADD CONSTRAINT "shop_item_created_by_eventmode_id_fk" FOREIGN KEY ("created_by") REFERENCES "public"."eventmode"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "shop" ADD CONSTRAINT "shop_guild_id_guilds_id_fk" FOREIGN KEY ("guild_id") REFERENCES "public"."guilds"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "user" ADD CONSTRAINT "user_guild_id_guilds_id_fk" FOREIGN KEY ("guild_id") REFERENCES "public"."guilds"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "warns" ADD CONSTRAINT "warns_guild_id_guilds_id_fk" FOREIGN KEY ("guild_id") REFERENCES "public"."guilds"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "warns" ADD CONSTRAINT "warns_executor_id_eventmode_id_fk" FOREIGN KEY ("executor_id") REFERENCES "public"."eventmode"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
