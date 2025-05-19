@@ -17,8 +17,6 @@ export const eventHistoryTypeEnum = pgEnum("event_history_type_enum", [
   "global",
 ]);
 
-type A = typeof eventHistoryTypeEnum.enumValues;
-
 export const eventHistory = pgTable("event_history", {
   id: uuid("id").default(sql`uuid_generate_v4()`).primaryKey().notNull(),
   type: eventHistoryTypeEnum("type").default("global").notNull(),
