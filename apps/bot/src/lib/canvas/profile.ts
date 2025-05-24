@@ -15,7 +15,7 @@ interface EventsmodeProfileProps {
   };
   stats: Stats & {
     top: number;
-    longestEvent: number;
+    longestEvent: string;
     percentage: number;
     totalWarns: number;
   };
@@ -60,7 +60,7 @@ export const generateCanvasProfile = async (props: EventsmodeProfileProps) => {
   content.font = `600 22px ${fondFamily}`;
 
   // The longest event
-  content.fillText(stats.longestEvent.toString(), 1175, 325);
+  content.fillText(stats.longestEvent, 1175, 325);
 
   // Favorite event
   content.fillText(stats.favoriteEvent, 1175, 460);

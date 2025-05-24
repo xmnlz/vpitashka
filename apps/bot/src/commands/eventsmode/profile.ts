@@ -92,12 +92,12 @@ export const profile = createCommand({
         hearts: _eventmode.hearts,
 
         top: eventmodeRank,
-        longestEvent: 1,
+        longestEvent: "deprecated",
         totalWarns: _eventmode.warns.length,
 
         percentage: calculateProgress(
           _eventmode.weeklyTime,
-          guild.protoSettings.general.minimumWeeklyQuota ?? 500,
+          guild.protoSettings.general.minimumWeeklyQuota,
         ),
       },
     });
