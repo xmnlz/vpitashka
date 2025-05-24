@@ -6,11 +6,14 @@
     "migrate": "drizzle-kit migrate"
   },
   "dependencies": {
+    "@napi-rs/canvas": "^0.1.70",
+    "croner": "^9.0.0",
     "discord.js": "^14.19.3",
     "discordx": "^11.12.3",
     "disenchantment": "^0.3.4",
     "drizzle-orm": "^0.41.0",
     "pg": "^8.15.6",
+    "sharp": "^0.34.1",
     "zod": "^3.24.4"
   },
   "devDependencies": {

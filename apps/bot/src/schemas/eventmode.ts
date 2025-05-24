@@ -2,6 +2,7 @@ import { relations, sql } from "drizzle-orm";
 import {
   boolean,
   check,
+  index,
   integer,
   pgTable,
   text,
@@ -10,14 +11,20 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 import { guild } from "./guild";
+import { warn } from "./warn";
 
-export const permissionRole = {
-  eventsmode: 1,
-  coach: 2,
-  curator: 3,
-  moderator: 4,
-  administrator: 5,
-  developer: 6,
+// NOTE: I hate enums
+export enum PermissionRole {
+  eventsmode = 1,
+  coach,
+  curator,
+  moderator,
+  administrator,
+  developer,
+}
+
+export const permissionToString = (permission: number) => {
+  return PermissionRole[permission] ?? "unknown";
 };
 
 export const eventmode = pgTable(
@@ -31,7 +38,7 @@ export const eventmode = pgTable(
       .notNull(),
 
     permissionRole: integer("permission_role")
-      .default(permissionRole.eventsmode)
+      .default(PermissionRole.eventsmode)
       .notNull(),
 
     // preferredLanguage: text("preferred_language")
@@ -51,6 +58,7 @@ export const eventmode = pgTable(
       .notNull(),
   },
   (t) => [
+    index().on(t.userId, t.guildId),
     unique().on(t.userId, t.guildId),
     check(
       "eventmode_permission_check",
@@ -61,6 +69,8 @@ export const eventmode = pgTable(
 
 export type SelectEventmode = typeof eventmode.$inferSelect;
 
-export const eventmodeRelation = relations(eventmode, ({ one }) => ({
+export const eventmodeRelation = relations(eventmode, ({ one, many }) => ({
   guild: one(guild, { fields: [eventmode.guildId], references: [guild.id] }),
+  warnsIssued: many(warn, { relationName: "executor" }),
+  warns: many(warn, { relationName: "target" }),
 }));

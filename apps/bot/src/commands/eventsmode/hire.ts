@@ -4,7 +4,7 @@ import {
   InteractionContextType,
 } from "discord.js";
 import { createCommand, guards, option } from "disenchantment";
-import { eventmode, permissionRole } from "../../schemas/eventmode";
+import { eventmode, PermissionRole } from "../../schemas/eventmode";
 import { sql } from "drizzle-orm";
 import { db } from "../../database/database";
 import { permissionRoleGuard } from "../../guard/permission-role.guard";
@@ -13,7 +13,7 @@ export const hire = createCommand({
   name: "hire",
   description: "Hire eventsmode",
   context: [InteractionContextType.Guild],
-  guards: guards(permissionRoleGuard(permissionRole.curator)),
+  guards: guards(permissionRoleGuard(PermissionRole.curator)),
   options: {
     user: option({
       name: "user",

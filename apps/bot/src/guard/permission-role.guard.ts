@@ -7,7 +7,7 @@ import type { SelectGuild } from "../schemas/guild";
 
 export type PermissionRoleGuardProps = {
   guild: SelectGuild;
-  eventmode: SelectEventmode;
+  executor: SelectEventmode;
 };
 
 export const permissionRoleGuard = (role: number) => {
@@ -16,7 +16,7 @@ export const permissionRoleGuard = (role: number) => {
     PermissionRoleGuardProps
   > = async (_client, ctx, next, props) => {
     const user = await db.query.eventmode.findFirst({
-      with: { guild: true },
+      with: { guild: true, warns: true },
       where: and(
         eq(eventmode.isHired, true),
         eq(eventmode.guildId, ctx.guild.id),
@@ -26,7 +26,7 @@ export const permissionRoleGuard = (role: number) => {
     });
 
     if (user) {
-      props.eventmode = user;
+      props.executor = user;
       props.guild = user.guild;
       return next();
     }

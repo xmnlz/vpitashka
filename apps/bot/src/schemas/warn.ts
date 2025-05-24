@@ -4,7 +4,7 @@ import { boolean, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 import { eventmode } from "./eventmode";
 import { guild } from "./guild";
 
-export const warns = pgTable("warns", {
+export const warn = pgTable("warns", {
   id: uuid("id").default(sql`uuid_generate_v4()`).primaryKey().notNull(),
   isVerbal: boolean("is_verbal").notNull(),
   reason: text("reason").notNull(),
@@ -24,14 +24,16 @@ export const warns = pgTable("warns", {
     .references(() => eventmode.id),
 });
 
-export const warnRelation = relations(warns, ({ one }) => ({
-  guild: one(guild, { fields: [warns.guildId], references: [guild.id] }),
+export const warnRelation = relations(warn, ({ one }) => ({
+  guild: one(guild, { fields: [warn.guildId], references: [guild.id] }),
   executor: one(eventmode, {
-    fields: [warns.executorId],
+    fields: [warn.executorId],
     references: [eventmode.id],
+    relationName: "executor",
   }),
   target: one(eventmode, {
-    fields: [warns.targetId],
+    fields: [warn.targetId],
     references: [eventmode.id],
+    relationName: "target",
   }),
 }));

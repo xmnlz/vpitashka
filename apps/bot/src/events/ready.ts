@@ -3,6 +3,7 @@ import { db } from "../database/database";
 import { guild } from "../schemas/guild";
 import { guildLogger } from "../schemas/guild-logger";
 import { config } from "../lib/safe-env";
+import { clearOldWarnsCron } from "../lib/cron/clear-warns";
 
 export const onceReadyEvent = createEvent({
   once: true,
@@ -11,6 +12,9 @@ export const onceReadyEvent = createEvent({
     await client.guilds.fetch();
 
     await initApplicationCommands(client, [config.DEV_GUILD_ID]);
+
+    // start clearing warns after every rerun
+    clearOldWarnsCron.trigger();
 
     console.log(`bot started successfully! ${client.user?.username}`);
   },

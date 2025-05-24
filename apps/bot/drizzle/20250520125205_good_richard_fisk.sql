@@ -1,0 +1,1 @@
+CREATE INDEX "eventmode_user_id_guild_id_index" ON "eventmode" USING btree ("user_id","guild_id");
