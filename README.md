@@ -4,7 +4,7 @@
 
 - [Source Code](https://github.com/xmnlz/vpitashka)
 
-An interactive bot designed for hosting events on the two largest and popular servers, [Meta](https://discord.gg/metaplay) and [Tenderly](https://discord.gg/tenderly) (~500.000 members), within the [CIS](https://en.wikipedia.org/wiki/Commonwealth_of_Independent_States) region.
+An interactive bot designed for hosting events on the two largest and popular servers, (~500.000 members), within the [CIS](https://en.wikipedia.org/wiki/Commonwealth_of_Independent_States) region.
 This bot is tailored to facilitate seamless event management and engagement on these prominent discord servers.
 
 ## ✨ Features
